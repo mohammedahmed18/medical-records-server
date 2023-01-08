@@ -8,22 +8,22 @@ const jwt = require('jsonwebtoken');
 
 @Injectable()
 export class AuthService {
-    constructor (private readonly userService : UsersService){}
+  constructor(private readonly userService: UsersService) {}
 
-    async validate(credentials: UserLoginDto) {
-        const {nationalId , password} = credentials
-        const user = await this.userService.findByNationalId(nationalId)
-    
-        const match = await argon2.verify(user.password , password) 
-        if (user && match ) return user;
-        
-        return null;
-      }
+  async validate(credentials: UserLoginDto) {
+    const { nationalId, password } = credentials;
+    const user = await this.userService.findByNationalId(nationalId);
 
+    const match = await argon2.verify(user.password, password);
+    if (user && match) return user;
 
-      generateJWT(user: User) {
-        const { password, ...payload } = user; //seperate the password from the payload
-        return jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: commons.TOKEN_LIFETIME });
-      }
-    
+    return null;
+  }
+
+  generateJWT(user: User) {
+    const { password, ...payload } = user; //seperate the password from the payload
+    return jwt.sign(payload, process.env.JWT_SECRET, {
+      expiresIn: commons.TOKEN_LIFETIME,
+    });
+  }
 }
