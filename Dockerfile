@@ -27,6 +27,7 @@ COPY . .
 
 COPY --from=development /app/dist ./dist
 
+RUN npx prisma generate
+
 EXPOSE 4000
-CMD ["npx" , "prisma" , "generate"]
 CMD ["node", "dist/main"]
