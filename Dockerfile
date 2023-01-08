@@ -28,5 +28,5 @@ COPY . .
 COPY --from=development /app/dist ./dist
 
 EXPOSE 4000
-
+CMD ["npx" , "prisma" , "generate"]
 CMD ["node", "dist/main"]
