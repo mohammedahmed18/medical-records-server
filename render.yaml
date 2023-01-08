@@ -1,0 +1,21 @@
+previewsEnabled: true
+previewsExpireAfterDays: 1
+
+services:
+- type: web
+  name: medical-records-server
+  env: docker
+  region: oregon
+  plan: starter
+  branch: main
+  dockerfilePath: ./Dockerfile
+  dockerContext: .
+  # domains:
+  #   - api.coolapp.dev
+  envVars:
+  - key: PORT
+    value: 4000
+  - key: EXAMPLE_GENERATE_SECRET
+    generateValue: true
+  - key: EXAMPLE_NO_SYNC
+    sync: false
