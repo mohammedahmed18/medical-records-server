@@ -13,17 +13,15 @@ import { AuthService } from './auth.service';
 
 @Controller('auth')
 export class AuthController {
-  constructor(private readonly authService: AuthService ) {}
+  constructor(private readonly authService: AuthService) {}
 
   @Post('login')
   @UsePipes(new ValidationPipe())
   async login(@Body() body: UserLoginDto) {
     const _user = await this.authService.validate(body);
     if (!_user) throw new UnauthorizedException(error_msgs.UNAUTHORIZED_LOGIN);
-    
+
     const token = await this.authService.generateJWT(_user);
-    return {token}
+    return { token };
   }
-
-
 }
