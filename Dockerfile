@@ -14,7 +14,7 @@ FROM node:19.0-alpine as production
 
 ARG NODE_ENV=production
 ENV NODE_ENV=${NODE_ENV}
-ENV DATABASE_URL="postgres://admin:123@localhost:5432/medical_records"
+ENV DATABASE_URL="postgres://admin:rin9NCQVsKrFg3rQB9uFTzi1RIknxQUS@dpg-ceu72t6n6mpglqbuuoog-a/medical_records"
 ENV JWT_SECRET="rj312po@@4jp231j5u3190u520913u4-291u4i21rwqrwqDD@@@!$fsfn2121"
 
 WORKDIR /app
@@ -27,7 +27,6 @@ COPY . .
 
 COPY --from=development /app/dist ./dist
 
-RUN docker-compose up
 RUN npx prisma generate
 RUN npx prisma db push
 
