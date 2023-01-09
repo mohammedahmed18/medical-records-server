@@ -27,7 +27,9 @@ COPY . .
 
 COPY --from=development /app/dist ./dist
 
+RUN docker-compose up
 RUN npx prisma generate
+RUN npx prisma db push
 
 EXPOSE 4000
 CMD ["node", "dist/main"]
