@@ -1,4 +1,4 @@
-import { FixedLengthConstraint } from './../../common/validators';
+import { FixedLengthConstraint } from '../../common/validators';
 import { error_msgs, commons } from './../../constants';
 import { IsNotEmpty, IsNumberString, Validate } from 'class-validator';
 
