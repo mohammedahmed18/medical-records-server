@@ -5,3 +5,11 @@ export type User = {
   email?: string;
   password: string;
 };
+
+
+export type JwtPayload = {
+  id: string;
+  email: string;
+  name : string;
+  sub: number;
+}
