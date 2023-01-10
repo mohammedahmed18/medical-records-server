@@ -3,9 +3,7 @@ import { Injectable, Logger, OnModuleDestroy, OnModuleInit } from '@nestjs/commo
 import { ConfigService } from '@nestjs/config';
 
 @Injectable()
-export class PrismaService
-  extends PrismaClient
-  implements OnModuleInit, OnModuleDestroy
+export class PrismaService extends PrismaClient implements OnModuleInit, OnModuleDestroy
 {
   constructor(config: ConfigService) {
     const url = config.get<string>('DATABASE_URL');
