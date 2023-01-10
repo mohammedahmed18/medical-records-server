@@ -1,15 +1,24 @@
 export type User = {
-  id: string;
-  name: string;
-  nationalId: string;
-  email?: string;
-  password: string;
+	id: string,
+	nationalId: string,
+	name: string,
+	email?: string,
+	password: string,
+	createdAt: Date,
+	updatedAt: Date,
+	hashedRt: string,
 };
 
 
 export type JwtPayload = {
-  id: string;
-  email: string;
-  name : string;
-  sub: number;
+	id: string,
+	nationalId: string,
+	name: string,
+	email?: string,
+	createdAt: Date,
+	updatedAt: Date,
+	hashedRt: string,
+	iat: number,
+	exp: number
+  refreshToken ? :string
 }

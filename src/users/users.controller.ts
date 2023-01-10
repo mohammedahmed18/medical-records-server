@@ -8,6 +8,7 @@ import {
   Get,
 } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
+import { Public } from 'src/common/decorators';
 
 @Controller('users')
 export class UsersController {
@@ -15,6 +16,7 @@ export class UsersController {
 
   //   FIXME: note this is only for testing remove it when the project is done
   @Post()
+  @Public()
   @UsePipes(new ValidationPipe())
   async createUser(@Body() data: CreateUserDto) {
     const user = await this.usersService.createUser(data);
@@ -23,7 +25,8 @@ export class UsersController {
 
   //   FIXME: note this is only for testing remove it when the project is done
   @Get()
-  async getUsers() {
-    return await this.usersService.getAll();
+  @Public()
+  async getUsers(@Body() body) {
+    return await this.usersService.getAll(body.take , body.skip);
   }
 }

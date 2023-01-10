@@ -1,9 +1,11 @@
-import { User } from './../common/types/index';
 import { error_msgs } from './../constants/errors';
+import { prismaErrors } from './../constants/prisma-errors';
+import { User } from './../common/types/index';
 import { PrismaService } from './../prisma.service';
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { Injectable, BadRequestException, InternalServerErrorException} from '@nestjs/common';
 import * as argon from 'argon2';
 import { CreateUserDto } from './dto/create-user.dto';
+import { PrismaClientKnownRequestError } from '@prisma/client/runtime';
 
 @Injectable()
 export class UsersService {
@@ -19,25 +21,54 @@ export class UsersService {
     return null;
   }
 
-  async createUser(userData: CreateUserDto) {
-    const hash = await argon.hash(userData.password);
-    const _user = await this.findByNationalId(userData.nationalId);
-    if (_user) throw new BadRequestException(error_msgs.ACCOUNT_ALREADY_EXISTS);
-    const user = await this.db.user.create({
+  async updateRtHash(userId: string, rt: string): Promise<void> {
+    const hash = await argon.hash(rt);
+    await this.db.user.update({
+      where: {
+        id: userId,
+      },
       data: {
-        name: userData.name,
-        email: userData.email,
-        nationalId: userData.nationalId,
-        password: hash,
+        hashedRt: hash,
       },
     });
+  }
 
-    return user;
+  async createUser(userData: CreateUserDto) {
+    const hash = await argon.hash(userData.password);
+    try {
+      const user = await this.db.user.create({
+        data: {
+          name: userData.name,
+          email: userData.email,
+          nationalId: userData.nationalId,
+          password: hash,
+        },
+      });
+
+      return user;
+    } catch (err) {
+      // handle inserting existing national id or email
+      if ( err instanceof PrismaClientKnownRequestError && err.code === prismaErrors.INSERT_UNIQUE)
+        throw new BadRequestException(error_msgs.ACCOUNT_ALREADY_EXISTS(err.meta?.target[0]));
+
+      throw new InternalServerErrorException('some thing went wrong');
+      }
   }
 
   //   FIXME: dev only
-  async getAll(): Promise<User[] | null> {
-    const users = await this.db.user.findMany();
+  async getAll(take? : number , skip? : number) {
+    const users = await this.db.user.findMany({
+      select : {
+        id : true,
+        nationalId : true,
+        name : true,
+        email : true,
+        createdAt : true,
+        updatedAt : true,
+      },
+      take,
+      skip
+    });
     return users;
   }
 }
