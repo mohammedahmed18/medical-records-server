@@ -8,12 +8,13 @@ import {
   Post,
   UseGuards,
   UsePipes,
-  ValidationPipe,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { JwtPayload } from 'src/common/types';
 import { RtGuard , AtGuard } from './../common/guards';
 import { getCurrentUser } from 'src/common/decorators';
+import { JoiValidationPipe } from 'src/common/pipes';
+import { loginSchema } from './validation-schemas';
 
 
 @Controller('auth')
@@ -22,7 +23,7 @@ export class AuthController {
 
   @Post('login')
   @Public()
-  @UsePipes(new ValidationPipe())
+  @UsePipes(new JoiValidationPipe(loginSchema))
   @HttpCode(HttpStatus.OK)
   async login(@Body() body: UserLoginDto) {
     return this.authService.login(body)
