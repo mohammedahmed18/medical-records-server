@@ -1,1 +1,1 @@
-export * from './joi-validation.pipe'
+export * from './joi-validation.pipe';
