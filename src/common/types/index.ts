@@ -1,3 +1,4 @@
+import { HttpStatus } from '@nestjs/common';
 export type User = {
   id: string;
   nationalId: string;
@@ -21,3 +22,10 @@ export type JwtPayload = {
   exp: number;
   refreshToken?: string;
 };
+
+
+export type CustomErrorOptions = {
+  msg : string,
+  statusCode ? : HttpStatus,
+  errorCode ? : string
+}

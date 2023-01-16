@@ -4,7 +4,7 @@ WORKDIR /app
 
 COPY package*.json ./
 
-RUN npm install --only=development
+RUN npm install
 
 COPY . .
 
@@ -18,4 +18,5 @@ RUN npx prisma generate
 RUN npx prisma db push
 
 EXPOSE 4000
-CMD ["node", "dist/main"]
+
+CMD ["npm", "run", "start:prod"]

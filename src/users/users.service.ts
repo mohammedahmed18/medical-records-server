@@ -1,15 +1,7 @@
-import { error_msgs } from './../constants/errors';
-import { prismaErrors } from './../constants/prisma-errors';
-import { User } from './../common/types/index';
 import { PrismaService } from './../prisma.service';
-import {
-  Injectable,
-  BadRequestException,
-  InternalServerErrorException,
-} from '@nestjs/common';
+import { Injectable} from '@nestjs/common';
 import * as argon from 'argon2';
 import { CreateUserDto } from './dto/create-user.dto';
-import { PrismaClientKnownRequestError } from '@prisma/client/runtime';
 
 @Injectable()
 export class UsersService {
@@ -39,8 +31,7 @@ export class UsersService {
 
   async createUser(userData: CreateUserDto) {
     const hash = await argon.hash(userData.password);
-    try {
-      const user = await this.db.user.create({
+    const user = await this.db.user.create({
         data: {
           name: userData.name,
           email: userData.email,
@@ -50,18 +41,6 @@ export class UsersService {
       });
 
       return user;
-    } catch (err) {
-      // handle inserting existing national id or email
-      if (
-        err instanceof PrismaClientKnownRequestError &&
-        err.code === prismaErrors.INSERT_UNIQUE
-      )
-        throw new BadRequestException(
-          error_msgs.ACCOUNT_ALREADY_EXISTS(err.meta?.target[0]),
-        );
-
-      throw new InternalServerErrorException('some thing went wrong');
-    }
   }
 
   //   FIXME: dev only
