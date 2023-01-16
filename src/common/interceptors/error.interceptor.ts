@@ -1,0 +1,35 @@
+import { CallHandler, ExecutionContext, Injectable, NestInterceptor } from '@nestjs/common';
+import { PrismaClientKnownRequestError } from '@prisma/client/runtime';
+import {catchError, Observable, throwError} from 'rxjs'
+import { error_msgs, prismaErrors } from 'src/constants';
+import { CustomError } from '../errors';
+
+
+
+@Injectable()
+export class ErrorInterceptor implements NestInterceptor {
+    
+  intercept(context: ExecutionContext, next: CallHandler): Observable<any> {
+    return next
+      .handle()
+      .pipe(
+        catchError((err) => {
+        // prisma unique error
+        if (err instanceof PrismaClientKnownRequestError && err.code === prismaErrors.INSERT_UNIQUE )
+            throw new CustomError({
+            msg : error_msgs.RESOURCE_ALREADY_EXISTS(err.meta?.target[0]),
+            statusCode : 400,
+            errorCode : prismaErrors.INSERT_UNIQUE
+            })
+
+          // Check if a custom error is provided
+          if (err?.response) {
+            return throwError(() => new CustomError({msg : err.response.message ,errorCode : err.response.errorCode, statusCode : err.response.statusCode}) )
+          } else {
+            // Use a default error
+            return throwError(() => new CustomError({msg : "internal server error",statusCode : 500}) )
+          }
+        }),
+      );
+  }
+}
