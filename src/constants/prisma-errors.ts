@@ -1,3 +1,3 @@
 export const prismaErrors = {
-    INSERT_UNIQUE : "P2002"
-}
+  INSERT_UNIQUE: 'P2002',
+};

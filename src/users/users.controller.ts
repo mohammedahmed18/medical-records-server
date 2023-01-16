@@ -1,13 +1,7 @@
 import { createUserSchema } from './validation-schemas';
 import { JoiValidationPipe } from 'src/common/pipes';
 import { UsersService } from 'src/users/users.service';
-import {
-  Controller,
-  Post,
-  Body,
-  UsePipes,
-  Get,
-} from '@nestjs/common';
+import { Controller, Post, Body, UsePipes, Get } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { Public } from 'src/common/decorators';
 
@@ -28,6 +22,6 @@ export class UsersController {
   @Get()
   @Public()
   async getUsers(@Body() body) {
-    return await this.usersService.getAll(body.take , body.skip);
+    return await this.usersService.getAll(body.take, body.skip);
   }
 }

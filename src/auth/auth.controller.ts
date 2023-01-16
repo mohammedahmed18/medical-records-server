@@ -11,11 +11,10 @@ import {
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { JwtPayload } from 'src/common/types';
-import { RtGuard , AtGuard } from './../common/guards';
+import { RtGuard, AtGuard } from './../common/guards';
 import { getCurrentUser } from 'src/common/decorators';
 import { JoiValidationPipe } from 'src/common/pipes';
 import { loginSchema } from './validation-schemas';
-
 
 @Controller('auth')
 export class AuthController {
@@ -26,23 +25,21 @@ export class AuthController {
   @UsePipes(new JoiValidationPipe(loginSchema))
   @HttpCode(HttpStatus.OK)
   async login(@Body() body: UserLoginDto) {
-    return this.authService.login(body)
+    return this.authService.login(body);
   }
 
-  @Post("refresh")
+  @Post('refresh')
   @Public()
   @UseGuards(RtGuard)
   @HttpCode(HttpStatus.OK)
-  async refreshToken(@getCurrentUser() user : JwtPayload){
-    return this.authService.refresh(user.id,user.refreshToken);
+  async refreshToken(@getCurrentUser() user: JwtPayload) {
+    return this.authService.refresh(user.id, user.refreshToken);
   }
 
-
-  @Post("logout")
+  @Post('logout')
   @UseGuards(AtGuard)
   @HttpCode(HttpStatus.OK)
-  async logout(@getCurrentUser("id") id : string){
+  async logout(@getCurrentUser('id') id: string) {
     return this.authService.logout(id);
   }
-
 }

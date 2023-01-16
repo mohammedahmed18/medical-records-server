@@ -1,3 +1,3 @@
-export {Public} from './public.decorator'
+export { Public } from './public.decorator';
 
-export * from './get-user.decorator'
+export * from './get-user.decorator';
