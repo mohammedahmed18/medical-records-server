@@ -1,4 +1,4 @@
-import { CallHandler, ExecutionContext, Injectable, NestInterceptor } from '@nestjs/common';
+import { CallHandler, ExecutionContext, Injectable, Logger, NestInterceptor } from '@nestjs/common';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime';
 import {catchError, Observable, throwError} from 'rxjs'
 import { error_msgs, prismaErrors } from 'src/constants';
@@ -14,6 +14,7 @@ export class ErrorInterceptor implements NestInterceptor {
       .handle()
       .pipe(
         catchError((err) => {
+          
         // prisma unique error
         if (err instanceof PrismaClientKnownRequestError && err.code === prismaErrors.INSERT_UNIQUE )
             throw new CustomError({
@@ -24,8 +25,12 @@ export class ErrorInterceptor implements NestInterceptor {
 
           // Check if a custom error is provided
           if (err?.response) {
+            if(typeof err.response === "string"){
+            return throwError(() => new CustomError({msg : err.response, statusCode : err.status}) )
+            }
             return throwError(() => new CustomError({msg : err.response.message ,errorCode : err.response.errorCode, statusCode : err.response.statusCode}) )
           } else {
+            Logger.error("::: " + err.message);
             // Use a default error
             return throwError(() => new CustomError({msg : "internal server error",statusCode : 500}) )
           }
