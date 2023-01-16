@@ -1,10 +1,11 @@
+import { createUserSchema } from './validation-schemas';
+import { JoiValidationPipe } from 'src/common/pipes';
 import { UsersService } from 'src/users/users.service';
 import {
   Controller,
   Post,
   Body,
   UsePipes,
-  ValidationPipe,
   Get,
 } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
@@ -17,7 +18,7 @@ export class UsersController {
   //   FIXME: note this is only for testing remove it when the project is done
   @Post()
   @Public()
-  @UsePipes(new ValidationPipe())
+  @UsePipes(new JoiValidationPipe(createUserSchema))
   async createUser(@Body() data: CreateUserDto) {
     const user = await this.usersService.createUser(data);
     return user;
