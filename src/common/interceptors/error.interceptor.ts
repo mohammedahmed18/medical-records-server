@@ -30,8 +30,8 @@ export class ErrorInterceptor implements NestInterceptor {
             }
             return throwError(() => new CustomError({msg : err.response.message ,errorCode : err.response.errorCode, statusCode : err.response.statusCode}) )
           } else {
+            // something went wrong
             Logger.error("::: " + err.message);
-            // Use a default error
             return throwError(() => new CustomError({msg : "internal server error",statusCode : 500}) )
           }
         }),

@@ -29,3 +29,5 @@ export type CustomErrorOptions = {
   statusCode ? : HttpStatus,
   errorCode ? : string
 }
+
+export type PublicUsers = Omit<User , "password" | "hashedRt">

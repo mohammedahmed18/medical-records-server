@@ -4,6 +4,7 @@ import { UsersService } from 'src/users/users.service';
 import { Controller, Post, Body, UsePipes, Get } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { Public } from 'src/common/decorators';
+import { PublicUsers as PublicUser, User } from 'src/common/types';
 
 @Controller('users')
 export class UsersController {
@@ -13,9 +14,8 @@ export class UsersController {
   @Post()
   @Public()
   @UsePipes(new JoiValidationPipe(createUserSchema))
-  async createUser(@Body() data: CreateUserDto) {
-    const user = await this.usersService.createUser(data);
-    return user;
+  async createUser(@Body() data: CreateUserDto) : Promise<PublicUser> {
+    return await this.usersService.createUser(data);
   }
 
   //   FIXME: note this is only for testing remove it when the project is done
