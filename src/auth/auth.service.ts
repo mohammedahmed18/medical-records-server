@@ -1,4 +1,4 @@
-import { PrismaService } from './../prisma.service';
+import { PrismaService } from '../database/prisma.service';
 import { error_msgs } from './../constants/errors';
 import { User } from './../common/types/index';
 import { UserLoginDto } from './dto/user-login.dto';

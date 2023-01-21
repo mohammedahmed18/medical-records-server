@@ -1,4 +1,4 @@
-import { PrismaService } from './../prisma.service';
+import { PrismaService } from '../database/prisma.service';
 import { Injectable} from '@nestjs/common';
 import * as argon from 'argon2';
 import { CreateUserDto } from './dto/create-user.dto';
