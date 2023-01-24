@@ -1,4 +1,4 @@
-import { PrismaService } from './../prisma.service';
+import { PrismaService } from '../database/prisma.service';
 import { error_msgs } from './../constants/errors';
 import { User } from './../common/types/index';
 import { UserLoginDto } from './dto/user-login.dto';
@@ -72,7 +72,7 @@ export class AuthService {
   }
 
   async generateJWT(user: User) {
-    const { password, ...payload } = user; //seperate the password from the payload
+    const { password,hashedRt, ...payload } = user; //seperate the password from the payload
 
     const [at, rt] = await Promise.all([
       this.jwt.signAsync(payload, {

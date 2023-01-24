@@ -28,7 +28,8 @@ export class ErrorInterceptor implements NestInterceptor {
             if(typeof err.response === "string"){
             return throwError(() => new CustomError({msg : err.response, statusCode : err.status}) )
             }
-            return throwError(() => new CustomError({msg : err.response.message ,errorCode : err.response.errorCode, statusCode : err.response.statusCode}) )
+            const {message , errorCode , statusCode} = err.response
+            return throwError(() => new CustomError({msg : message ,errorCode , statusCode}) )
           } else {
             // something went wrong
             Logger.error("::: " + err.message);
