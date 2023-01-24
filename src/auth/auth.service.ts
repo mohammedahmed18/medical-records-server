@@ -72,7 +72,7 @@ export class AuthService {
   }
 
   async generateJWT(user: User) {
-    const { password, ...payload } = user; //seperate the password from the payload
+    const { password,hashedRt, ...payload } = user; //seperate the password from the payload
 
     const [at, rt] = await Promise.all([
       this.jwt.signAsync(payload, {
