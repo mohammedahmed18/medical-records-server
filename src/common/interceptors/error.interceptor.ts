@@ -1,5 +1,5 @@
+import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
 import { CallHandler, ExecutionContext, Injectable, Logger, NestInterceptor } from '@nestjs/common';
-import { PrismaClientKnownRequestError } from '@prisma/client/runtime';
 import {catchError, Observable, throwError} from 'rxjs'
 import { error_msgs, prismaErrors } from 'src/constants';
 import { CustomError } from '../errors';
