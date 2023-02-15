@@ -1,6 +1,6 @@
 import { PrismaService } from '../database/prisma.service';
 import { error_msgs } from './../constants/errors';
-import { User } from './../common/types/index';
+import {User} from '@prisma/client'
 import { UserLoginDto } from './dto/user-login.dto';
 import { ForbiddenException, Injectable } from '@nestjs/common';
 import { UsersService } from 'src/users/users.service';

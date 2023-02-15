@@ -1,14 +1,5 @@
 import { HttpStatus } from '@nestjs/common';
-export type User = {
-  id: string;
-  nationalId: string;
-  name: string;
-  email?: string;
-  password: string;
-  createdAt: Date;
-  updatedAt: Date;
-  hashedRt: string;
-};
+import { User } from '@prisma/client';
 
 export type JwtPayload = {
   id: string;
@@ -30,7 +21,8 @@ export type CustomErrorOptions = {
   errorCode ? : string
 }
 
+
 // TODO: find a way to refactor this with the getcurrentuser decorator
-export enum PrivateUserFields { password , hashedRt  ,createdAt  ,updatedAt} // these fields is not important to know in the fronend
+export enum PrivateUserFields { password , hashedRt  ,createdAt  ,updatedAt } // these fields is not important to know in the fronend
 
 export type PublicUser = Omit<User , keyof typeof PrivateUserFields>

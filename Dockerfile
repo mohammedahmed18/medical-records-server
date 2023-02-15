@@ -16,7 +16,7 @@ RUN npm run build
 
 RUN npx prisma generate
 RUN npx prisma db push
-
-EXPOSE 4000
+RUN npx prisma studio
+EXPOSE 4000 5555
 
 CMD ["npm", "run", "start:prod"]
