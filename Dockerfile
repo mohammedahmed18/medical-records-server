@@ -14,11 +14,11 @@ ENV NODE_ENV=${NODE_ENV}
 
 RUN npx prisma generate
 RUN npx prisma db push
-RUN npx prisma studio
+# RUN npx prisma studio
 
 
 RUN npm run build
 
-EXPOSE 4000 5555
+EXPOSE 4000
 
 CMD ["npm", "run", "start:prod"]
