@@ -12,11 +12,13 @@ ARG NODE_ENV=production
 ENV NODE_ENV=${NODE_ENV}
 
 
-RUN npm run build
-
 RUN npx prisma generate
 RUN npx prisma db push
 RUN npx prisma studio
+
+
+RUN npm run build
+
 EXPOSE 4000 5555
 
 CMD ["npm", "run", "start:prod"]
