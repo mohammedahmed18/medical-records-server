@@ -10,16 +10,81 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model User {
-id String @id @default(uuid())
-nationalId String @unique
-name String
-email String? @unique
-password String
-createdAt DateTime @default(now())
-updatedAt DateTime @updatedAt
-hashedRt String?
+model Marital_Status {
+  id    Int    @id @default(autoincrement()) @db.Integer
+  label String
+  users User[]
 
-@@map("users")
+  @@map("marital_status")
 }
 
+model Educational_Level {
+  id    Int    @id @default(autoincrement()) @db.Integer
+  label String
+  users User[]
+
+  @@map("educational_level")
+}
+
+model Employment_Status{
+  id    Int    @id @default(autoincrement()) @db.Integer
+  label String
+  users User[]
+  @@map("employment_status")
+}
+enum Gender{
+  Male
+  Female
+}
+
+model User {
+  id                 String   @id @default(uuid())
+  nationalId         String   @unique
+  name               String
+  email              String?  @unique
+  password           String
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+  hashedRt           String?
+  gender             Gender
+  dob                DateTime @db.Date //only the date not the time
+  avg_monthly_income Float?
+  is_admin           Boolean  @default(false)
+  weight             String?
+  height_cm          Decimal?
+  image_src          String   @default("/images/default_pp.jpg")
+
+  maritalStatus   Marital_Status @relation(fields: [maritalStatusId], references: [id], map: "user_martial_status_fk")
+  maritalStatusId Int
+
+  educationalLevel   Educational_Level @relation(fields: [educationalLevelId], references: [id], map: "users_educational_level_fk")
+  educationalLevelId Int
+
+  employmentStatus   Employment_Status @relation(fields: [employmentStatusId], references: [id], map: "users_employment_status_fk")
+  employmentStatusId Int
+  @@map("users")
+}
+
+// medical_specializations (table)
+// name
+// id
+
+// Diagnoses(table)
+// doctor_id
+// user_id
+// Body_temperature
+// Blood Pressure
+// Heart rate
+// Respiratory rate: the number of breaths a person takes in a minute.
+
+// Progress_notes (table)
+// doctor_id
+// user_id
+// note
+// created_at
+
+// Laboratory_tests (table)
+// studing_Documents (صور التحاليل)
+// id 
+// create_id
+// ........etc

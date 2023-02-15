@@ -30,4 +30,7 @@ export type CustomErrorOptions = {
   errorCode ? : string
 }
 
-export type PublicUsers = Omit<User , "password" | "hashedRt">
+// TODO: find a way to refactor this with the getcurrentuser decorator
+export enum PrivateUserFields { password , hashedRt  ,createdAt  ,updatedAt} // these fields is not important to know in the fronend
+
+export type PublicUser = Omit<User , keyof typeof PrivateUserFields>

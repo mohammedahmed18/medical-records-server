@@ -3,10 +3,11 @@ import { JoiValidationPipe } from 'src/common/pipes';
 import { UsersService } from 'src/users/users.service';
 import { Controller, Post, Body, UsePipes, Get } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
-import { Public } from 'src/common/decorators';
-import { PublicUsers as PublicUser, User } from 'src/common/types';
+import { getCurrentUser, Public } from 'src/common/decorators';
+import { PublicUser as PublicUser } from 'src/common/types';
+import { USERS_BASE_URL, USER_PROFILE_URL } from 'src/constants';
 
-@Controller('users')
+@Controller(USERS_BASE_URL)
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
@@ -24,4 +25,11 @@ export class UsersController {
   async getUsers(@Body() body) {
     return await this.usersService.getAll(body.take, body.skip);
   }
+
+
+  @Get(USER_PROFILE_URL)
+  async getUserProfile(@getCurrentUser() currentUser){
+      return await this.usersService.loggedInUserProfile(currentUser);
+  }
+
 }

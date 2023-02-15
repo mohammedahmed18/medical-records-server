@@ -15,12 +15,13 @@ import { RtGuard, AtGuard } from './../common/guards';
 import { getCurrentUser } from 'src/common/decorators';
 import { JoiValidationPipe } from 'src/common/pipes';
 import { loginSchema } from './validation-schemas';
+import { AUTH_BASE_URL, LOGIN_URL } from 'src/constants';
 
-@Controller('auth')
+@Controller(AUTH_BASE_URL)
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
-  @Post('login')
+  @Post(LOGIN_URL)
   @Public()
   @UsePipes(new JoiValidationPipe(loginSchema))
   @HttpCode(HttpStatus.OK)

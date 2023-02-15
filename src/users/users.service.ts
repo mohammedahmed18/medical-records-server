@@ -1,8 +1,9 @@
+import { PrivateUserFields } from './../common/types/index';
 import { PrismaService } from '../database/prisma.service';
 import { Injectable} from '@nestjs/common';
 import * as argon from 'argon2';
 import { CreateUserDto } from './dto/create-user.dto';
-import { PublicUsers } from 'src/common/types';
+import { PublicUser } from 'src/common/types';
 import { PUBLIC_FIELDS } from 'src/constants';
 
 @Injectable()
@@ -31,7 +32,7 @@ export class UsersService {
     });
   }
 
-  async createUser(userData: CreateUserDto) : Promise<PublicUsers> {
+  async createUser(userData: CreateUserDto) : Promise<PublicUser> {
     const hash = await argon.hash(userData.password);
     const user = await this.db.user.create({
         data: {
@@ -47,12 +48,16 @@ export class UsersService {
   }
 
   //   FIXME: dev only
-  async getAll(take?: number, skip?: number) : Promise<PublicUsers[]> {
+  async getAll(take?: number, skip?: number) : Promise<PublicUser[]> {
     const users = await this.db.user.findMany({
       select: PUBLIC_FIELDS,
       take,
       skip,
     });
     return users;
+  }
+
+  async loggedInUserProfile(currentUser) : Promise<PublicUser>{
+    return currentUser
   }
 }
