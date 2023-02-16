@@ -12,7 +12,7 @@ ENV NODE_ENV=${NODE_ENV}
 
 
 RUN npx prisma generate
-RUN npx prisma db push
+# RUN npx prisma db push
 
 EXPOSE 5555
 
