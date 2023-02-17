@@ -14,7 +14,7 @@ export class UsersController {
   @Post()
   @Public()
   @UsePipes(new JoiValidationPipe(createUserSchema))
-  async createUser(@Body() data) : Promise<PublicUser> {
+  async createUser(@Body() data) : Promise<string> {
     return await this.usersService.createUser(data);
   }
 
@@ -27,8 +27,8 @@ export class UsersController {
 
 
   @Get(USER_PROFILE_URL)
-  async getUserProfile(@getCurrentUser() currentUser){
-      return await this.usersService.loggedInUserProfile(currentUser);
+  async getUserProfile(@getCurrentUser("id") userId : string){
+      return await this.usersService.loggedInUserProfile(userId);
   }
 
 }

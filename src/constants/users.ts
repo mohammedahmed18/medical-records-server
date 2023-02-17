@@ -9,13 +9,20 @@ export const PUBLIC_FIELDS : Prisma.UserSelect = {
     updatedAt: true,
     avg_monthly_income : true,
     dob : true,
-    educationalLevel : true,
-    employmentStatus : true,
+    educationalLevel : {
+        select : {label : true}
+    },
+    employmentStatus : {
+        select : {label : true},
+        // include : {_count : {select : {users : true}}}
+    },
     gender : true,
     image_src : true,
     weight : true,
     height_cm : true,
-    maritalStatus : true
+    maritalStatus : {
+        select : {label : true}
+    }
 }
 export const nationalId_chars = 14
 export const PASSWORD_MIN_LENGTH = 6
