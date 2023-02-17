@@ -1,5 +1,5 @@
 import { PrismaService } from '../database/prisma.service';
-import { Injectable} from '@nestjs/common';
+import { BadRequestException, Injectable} from '@nestjs/common';
 import * as argon from 'argon2';
 import { PUBLIC_FIELDS } from 'src/constants';
 import {Prisma} from '@prisma/client'
@@ -8,6 +8,17 @@ import { PublicUser } from 'src/common/types';
 export class UsersService {
   constructor(private readonly db: PrismaService) {}
 
+  async findById(userId: string , select: Prisma.UserSelect){
+    const user = await this.db.user.findFirst({
+      where: { id : userId },
+      select,
+    });
+    if (user) {
+      return user;
+    }
+    return null;
+  }
+  
   async findByNationalId(nationalId: string) {
     const user = await this.db.user.findFirst({
       where: { nationalId },
@@ -30,21 +41,21 @@ export class UsersService {
     });
   }
 
-  async createUser(userData: Prisma.UserCreateInput) : Promise<PublicUser | null> {
+  async createUser(userData: Prisma.UserCreateInput) : Promise<string> {
     const hash = await argon.hash(userData.password);
     delete userData.password
-    const user : any = await this.db.user.create({
+     await this.db.user.create({
         data: {...userData, password : hash , dob : new Date(userData.dob)},
-        select : PUBLIC_FIELDS
+        // select : PUBLIC_FIELDS
 
       });
 
-      return user;
+      return "done 👍";
   }
 
   //   FIXME: dev only
-  async getAll(take?: number, skip?: number) : Promise<PublicUser[]> {
-    const users : any[] = await this.db.user.findMany({
+  async getAll(take?: number, skip?: number) : Promise<Partial<PublicUser>[]> {
+    const users  = await this.db.user.findMany({
       select: PUBLIC_FIELDS,
       take,
       skip,
@@ -52,7 +63,15 @@ export class UsersService {
     return users;
   }
 
-  async loggedInUserProfile(currentUser) : Promise<PublicUser>{
-    return currentUser
-  }
+  async loggedInUserProfile(userId: string) : Promise<Partial<PublicUser> | null>{
+      const user : any = await this.findById(userId , PUBLIC_FIELDS);
+      
+      if(!user) throw new BadRequestException("no user found");
+      
+      // flatten the user
+      user["employmentStatus"] = user.employmentStatus.label
+      user["maritalStatus"] = user.maritalStatus.label
+      user["educationalLevel"] = user.educationalLevel.label
+      return user;
+    }
 }

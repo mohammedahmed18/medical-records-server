@@ -26,7 +26,7 @@ export class PrismaService
 
   async onModuleInit() {
     await this.$connect();
-    await this.cleanDatabase()
+    // await this.cleanDatabase()
     await this.seed()
     Logger.log('Database is connected');
   }
@@ -47,6 +47,10 @@ export class PrismaService
 
 
   async seed(){
+    const usersCount = await this.user.count();
+    
+    if(usersCount > 0) return;
+    
     Logger.debug("removing all data inside Marital Status...")
     await this.marital_Status.deleteMany()
     Logger.debug("add seed for Marital Status...")
@@ -54,13 +58,18 @@ export class PrismaService
     await this.marital_Status.createMany({
       data : [
         {
-          label : "single"
+          label : "single",
+          id : 1,
         },
         {
-          label : "married"
+          label : "married",
+          id : 2,
+
         },
         {
-          label : "divorced"
+          label : "divorced",
+          id : 3,
+        
         }
 
       ]
@@ -75,7 +84,8 @@ export class PrismaService
     await this.educational_Level.createMany({
       data : [
         {
-          label : "Diplome"
+          label : "Diplome",
+          id : 1
         }
       ]
     })
@@ -91,13 +101,18 @@ export class PrismaService
     await this.employment_Status.createMany({
       data : [
         {
-          label : "worker"
+          label : "worker",
+          id : 1
         },
         {
-          label : "employee"
+          label : "employee",
+          id : 2
+
         },
         {
-          label : "self-employed"
+          label : "self-employed",
+          id : 3
+
         }
       ]
     })
