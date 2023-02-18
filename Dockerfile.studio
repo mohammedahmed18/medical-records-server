@@ -4,7 +4,7 @@ WORKDIR /app
 
 RUN npm install prisma --save-dev
 
-COPY ../prisma .
+COPY ./prisma .
 
 
 ARG NODE_ENV=production
@@ -12,7 +12,7 @@ ENV NODE_ENV=${NODE_ENV}
 
 
 RUN npx prisma generate
-RUN npx prisma db push
+# RUN npx prisma db push
 
 EXPOSE 5555
 
