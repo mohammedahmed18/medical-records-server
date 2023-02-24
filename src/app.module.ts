@@ -6,7 +6,6 @@ import { UsersModule } from './users/users.module';
 import { ConfigModule } from '@nestjs/config';
 import { APP_GUARD } from '@nestjs/core';
 import { DatabaseModule } from './database/database.module';
-import { ServeStaticModule } from '@nestjs/serve-static';
 import { join } from 'path';
 import { GraphQLModule } from '@nestjs/graphql';
 import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
@@ -22,10 +21,6 @@ import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
       debug: process.env.NODE_ENV === "development",
       playground: true,
       autoSchemaFile: join(process.cwd(), 'src/schema.gql'),
-    }),
-     // TODO: remove the static files access and upload media to some provider
-     ServeStaticModule.forRoot({
-      rootPath: join(__dirname, '..', 'public'),
     }),
   ],
   controllers: [AppController],
