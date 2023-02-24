@@ -47,6 +47,10 @@ export class PrismaService
 
 
   async seed(){
+    const usersCount = await this.user.count();
+    
+    if(usersCount > 0) return;
+
     Logger.debug("removing all data inside Marital Status...")
     await this.marital_Status.deleteMany()
     Logger.debug("add seed for Marital Status...")
