@@ -3,7 +3,6 @@ import { JoiValidationPipe } from 'src/common/pipes';
 import { UsersService } from 'src/users/users.service';
 import { Controller, Post, Body, UsePipes, Get } from '@nestjs/common';
 import { getCurrentUser, Public } from 'src/common/decorators';
-import {  PublicUser } from 'src/common/types';
 import { USERS_BASE_URL, USER_PROFILE_URL } from 'src/constants';
 
 @Controller(USERS_BASE_URL)
