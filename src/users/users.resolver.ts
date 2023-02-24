@@ -7,7 +7,12 @@ export class UserResolver {
   @Query(() => String)
   @Public()
   sayHello(): string {
-    // return 'Hello World!';
     return 'graphql is working';
   }
+  
+  @Query(() => String)
+  protectedRoute(): string {
+    return 'this is protected';
+  }
+  
 }

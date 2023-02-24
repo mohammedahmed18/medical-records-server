@@ -4,4 +4,5 @@
 
 type Query {
   sayHello: String!
+  protectedRoute: String!
 }

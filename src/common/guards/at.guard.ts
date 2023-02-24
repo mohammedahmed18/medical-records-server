@@ -18,7 +18,6 @@ export class AtGuard extends AuthGuard('jwt') {
       return true;
     }
     const isGraphQL = !!GqlExecutionContext.create(context).getContext().req;
-    console.log("isGraphQL" , isGraphQL);
     
     return isGraphQL ? this.canActivateGraphQL(context) : super.canActivate(context);
   }
