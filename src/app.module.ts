@@ -21,6 +21,7 @@ import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
       debug: process.env.NODE_ENV === "development",
       playground: true,
       autoSchemaFile: join(process.cwd(), 'src/schema.gql'),
+      introspection: true
     }),
   ],
   controllers: [AppController],
