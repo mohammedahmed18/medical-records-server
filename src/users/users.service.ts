@@ -1,16 +1,16 @@
 import { PrismaService } from '../database/prisma.service';
-import { BadRequestException, Injectable} from '@nestjs/common';
+import { BadRequestException, Injectable, Logger } from '@nestjs/common';
 import * as argon from 'argon2';
 import { PUBLIC_FIELDS } from 'src/constants';
-import {Prisma} from '@prisma/client'
+import { Prisma } from '@prisma/client';
 import { PublicUser } from 'src/common/types';
 @Injectable()
 export class UsersService {
   constructor(private readonly db: PrismaService) {}
 
-  async findById(userId: string , select: Prisma.UserSelect){
+  async findById(userId: string, select: Prisma.UserSelect) {
     const user = await this.db.user.findFirst({
-      where: { id : userId },
+      where: { id: userId },
       select,
     });
     if (user) {
@@ -18,7 +18,7 @@ export class UsersService {
     }
     return null;
   }
-  
+
   async findByNationalId(nationalId: string) {
     const user = await this.db.user.findFirst({
       where: { nationalId },
@@ -41,37 +41,40 @@ export class UsersService {
     });
   }
 
-  async createUser(userData: Prisma.UserCreateInput) : Promise<string> {
+  async createUser(userData: Prisma.UserCreateInput): Promise<string> {
     const hash = await argon.hash(userData.password);
-    delete userData.password
-     await this.db.user.create({
-        data: {...userData, password : hash , dob : new Date(userData.dob)},
-        // select : PUBLIC_FIELDS
+    delete userData.password;
+    await this.db.user.create({
+      data: { ...userData, password: hash, dob: new Date(userData.dob) },
+      // select : PUBLIC_FIELDS
+    });
 
-      });
-
-      return "done 👍";
+    return 'done 👍';
   }
 
   //   FIXME: dev only
-  async getAll(take?: number, skip?: number) : Promise<Partial<PublicUser>[]> {
-    const users  = await this.db.user.findMany({
+  async getAll(take?: number, skip?: number): Promise<Partial<PublicUser>[]> {
+    const users = await this.db.user.findMany({
       select: PUBLIC_FIELDS,
       take,
       skip,
     });
-    return users;
+    return users.map(this.mapUserToProfile);
   }
 
-  async loggedInUserProfile(userId: string) : Promise<Partial<PublicUser> | null>{
-      const user : any = await this.findById(userId , PUBLIC_FIELDS);
-      
-      if(!user) throw new BadRequestException("no user found");
-      
-      // flatten the user
-      user["employmentStatus"] = user.employmentStatus.label
-      user["maritalStatus"] = user.maritalStatus.label
-      user["educationalLevel"] = user.educationalLevel.label
-      return user;
-    }
+  mapUserToProfile(user): Partial<PublicUser> {
+    const mappedUser = Object.assign({}, user);
+    mappedUser['employmentStatus'] = user.employmentStatus.label;
+    mappedUser['maritalStatus'] = user.maritalStatus.label;
+    mappedUser['educationalLevel'] = user.educationalLevel.label;
+    return mappedUser;
+  }
+
+  async loggedInUserProfile(
+    userId: string,
+  ): Promise<Partial<PublicUser> | null> {
+    const user: any = await this.findById(userId, PUBLIC_FIELDS);
+    if (!user) throw new BadRequestException('no user found');
+    return this.mapUserToProfile(user);
+  }
 }

@@ -1,12 +1,8 @@
-import { Field, ObjectType } from "@nestjs/graphql";
+import { ObjectType } from "@nestjs/graphql";
+import { User } from "./user.schema";
 
 @ObjectType()
-export class UserProfile{
-    @Field()
-    id: string;
-
-    @Field()
-    nationalId : string;
+export class UserProfile extends User{
 
     
 }

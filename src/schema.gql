@@ -2,7 +2,49 @@
 # THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
 # ------------------------------------------------------
 
+type User {
+  id: String!
+  nationalId: String!
+  name: String!
+  email: String
+  gender: Gender!
+  dob: DateTime!
+  avg_monthly_income: Float
+  weight: Float
+  height_cm: Float
+  image_src: String
+  employmentStatus: String!
+  maritalStatus: String!
+  educationalLevel: String!
+}
+
+enum Gender {
+  Male
+  Female
+}
+
+"""
+A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date-time format.
+"""
+scalar DateTime
+
+type UserProfile {
+  id: String!
+  nationalId: String!
+  name: String!
+  email: String
+  gender: Gender!
+  dob: DateTime!
+  avg_monthly_income: Float
+  weight: Float
+  height_cm: Float
+  image_src: String
+  employmentStatus: String!
+  maritalStatus: String!
+  educationalLevel: String!
+}
+
 type Query {
-  sayHello: String!
-  protectedRoute: String!
+  users: [User!]!
+  me: UserProfile!
 }
