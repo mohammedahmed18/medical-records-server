@@ -24,6 +24,14 @@
     "prepare": "husky install",
     "lint-staged": "lint-staged"
   },
+  "lint-staged": {
+    "src/**/*.+(ts)": [
+      "eslint --fix"
+    ],
+    "src/**/*.{ts,json,md}": [
+      "prettier --write"
+    ]
+  },
   "dependencies": {
     "@nestjs/apollo": "^10.2.0",
     "@nestjs/common": "^9.0.0",
