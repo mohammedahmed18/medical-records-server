@@ -1,7 +1,7 @@
+import { GraphQlUtils } from './../../utils/graphqlUtils';
 import { ExecutionContext, Injectable } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { ExecutionContextHost } from '@nestjs/core/helpers/execution-context-host';
-import { GqlExecutionContext } from '@nestjs/graphql';
 import { AuthGuard } from '@nestjs/passport';
 
 @Injectable()
@@ -10,9 +10,6 @@ export class AtGuard extends AuthGuard('jwt') {
     super();
   }
 
-  isRest(context: ExecutionContext): boolean{
-    return GqlExecutionContext.create(context).getType() === "http";
-  }
 
    canActivate(context: ExecutionContext) {
     const isPublic = this.reflector.getAllAndOverride<boolean>('isPublic', [
@@ -23,12 +20,11 @@ export class AtGuard extends AuthGuard('jwt') {
       return true;
     }
   
-    return this.isRest(context) ? super.canActivate(context) : this.canActivateGraphQL(context);
+    return GraphQlUtils.isGraphQl(context) ? this.canActivateGraphQL(context) : super.canActivate(context);
   }
   canActivateGraphQL(context : ExecutionContext){
-    const ctx = GqlExecutionContext.create(context);
-    const { req } = ctx.getContext();
-    const { variables } = ctx.getArgs();
+    const {req , args} = GraphQlUtils.getGraphQlContextParams(context)
+    const { variables } = args;
     if (variables) {
       req.body = variables;
     }

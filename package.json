@@ -20,7 +20,19 @@
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
     "test:e2e": "jest --config ./test/jest-e2e.json",
     "docs": "npm run generate_docs && git --git-dir=.git2/ add --all -f ./medical_records_api_docs && git --git-dir=.git2/ commit -m \"api docs\" && git --git-dir=.git2/ push origin main -f && echo the docs is live on : https://medical-server-api-docs.vercel.app/",
-    "generate_docs": "npx insomnia-documenter --config api-docs.json --output ./medical_records_api_docs"
+    "generate_docs": "npx insomnia-documenter --config api-docs.json --output ./medical_records_api_docs",
+    "prepare": "husky install",
+    "lint-staged": "lint-staged",
+    "type-check": "tsc --noEmit"
+
+  },
+  "lint-staged": {
+    "src/**/*.+(ts)": [
+      "eslint --fix"
+    ],
+    "src/**/*.{ts,json,md}": [
+      "prettier --write"
+    ]
   },
   "dependencies": {
     "@nestjs/apollo": "^10.2.0",
@@ -54,7 +66,9 @@
     "eslint": "^8.0.1",
     "eslint-config-prettier": "^8.3.0",
     "eslint-plugin-prettier": "^4.0.0",
+    "husky": "^8.0.0",
     "jest": "29.3.1",
+    "lint-staged": "^13.1.2",
     "prettier": "^2.3.2",
     "prisma": "^4.8.1",
     "source-map-support": "^0.5.20",

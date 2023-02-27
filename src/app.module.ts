@@ -1,3 +1,4 @@
+import { GraphQlUtils } from './utils/graphqlUtils';
 import { AtGuard } from './common/guards/at.guard';
 import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
@@ -32,4 +33,8 @@ import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
     },
   ],
 })
-export class AppModule {}
+export class AppModule {
+  constructor() {
+    GraphQlUtils.registerEnumTypes()
+  }
+}
