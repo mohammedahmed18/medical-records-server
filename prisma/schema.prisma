@@ -1,6 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -8,6 +5,66 @@ generator client {
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
+}
+
+enum Gender {
+  Male
+  Female
+}
+
+enum MedicalSpecialization {
+  Anesthesia
+  Cardiovascular
+  CommunityHealth
+  Dentistry
+  Dermatology
+  DietNutrition
+  Emergency
+  Endocrine
+  Gastroenterologic
+  Genetic
+  Geriatric
+  Gynecologic
+  Hematologic
+  Infectious
+  LaboratoryScience
+  Midwifery
+  Musculoskeletal
+  Neurologic
+  Nursing
+  Obstetric
+  Oncologic
+  Optometric
+  Otolaryngologic
+  Pathology
+  Pediatric
+  PharmacySpecialty
+  Physiotherapy
+  PlasticSurgery
+  Podiatric
+  PrimaryCare
+  Psychiatric
+  PublicHealth
+  Pulmonary
+  Radiography
+  Renal
+  RespiratoryTherapy
+  Rheumatologic
+  SpeechPathology
+  Surgical
+  Toxicologic
+  Urologic
+}
+
+enum MedicalRecordsActionTypes {
+  Generic
+  Diagnosis
+  Surgery
+  Birth
+  Death
+  Illness
+  Allergy
+  LabTest
 }
 
 model Marital_Status {
@@ -26,65 +83,103 @@ model Educational_Level {
   @@map("educational_level")
 }
 
-model Employment_Status{
+model Employment_Status {
   id    Int    @id @default(autoincrement()) @db.Integer
   label String
   users User[]
+
   @@map("employment_status")
 }
-enum Gender{
-  Male
-  Female
-}
 
+// citizen / doctor
 model User {
-  id                 String   @id @default(uuid())
-  nationalId         String   @unique
-  name               String
-  email              String?  @unique
-  password           String
-  createdAt          DateTime @default(now())
-  updatedAt          DateTime @updatedAt
-  hashedRt           String?
-  gender             Gender
-  dob                DateTime @db.Date //only the date not the time
-  avg_monthly_income Float?
-  is_admin           Boolean  @default(false)
-  weight             String?
-  height_cm          Decimal?
-  image_src          String   @default("/images/default_pp.jpg")
+  id                    String   @id @default(uuid())
+  nationalId            String   @unique
+  name                  String
+  email                 String?  @unique
+  password              String
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
+  hashedRt              String?
+  gender                Gender
+  dob                   DateTime @db.Date //only the date not the time
+  avg_monthly_income    Float?
+  weight                String?
+  height_cm             Decimal?
+  image_src             String   @default("/images/default_pp.jpg")
+  
+  maritalStatus         Marital_Status @relation(fields: [maritalStatusId], references: [id])
+  maritalStatusId       Int
+  
+  educationalLevel      Educational_Level @relation(fields: [educationalLevelId], references: [id])
+  educationalLevelId    Int
+  
+  employmentStatus      Employment_Status @relation(fields: [employmentStatusId], references: [id])
+  employmentStatusId    Int
 
-  maritalStatus   Marital_Status @relation(fields: [maritalStatusId], references: [id], map: "user_martial_status_fk")
-  maritalStatusId Int
+  medicalSpecialization MedicalSpecialization? //will be null if it's a citizen not a doctor
 
-  educationalLevel   Educational_Level @relation(fields: [educationalLevelId], references: [id], map: "users_educational_level_fk")
-  educationalLevelId Int
+  admin                 Admin? // it's nullable because not every user is an admin of course
+  medicalRecords        Medical_Record[] @relation("user_medical_records_FK")
+  writtenMedicalRecors  Medical_Record[] @relation("doctor_medical_records_FK") // this will return array of all the records that the doctor wrote , 
 
-  employmentStatus   Employment_Status @relation(fields: [employmentStatusId], references: [id], map: "users_employment_status_fk")
-  employmentStatusId Int
   @@map("users")
 }
 
-// medical_specializations (table)
-// name
-// id
+model Admin {
+  id              String @id @default(uuid())
 
-// Diagnoses(table)
-// doctor_id
-// user_id
-// Body_temperature
-// Blood Pressure
-// Heart rate
-// Respiratory rate: the number of breaths a person takes in a minute.
+  user            User   @relation(fields: [userId], references: [id])
+  userId          String @unique
+  
+  username        String
+  password        String
+  
+  role            Role   @relation(fields: [roleId], references: [id])
+  roleId          String
 
-// Progress_notes (table)
-// doctor_id
-// user_id
-// note
-// created_at
+  @@map("admins")
+}
 
-// Laboratory_tests (table)
-// studing_Documents (صور التحاليل)
-// id 
-// create_id
-// ........etc
+model Role {
+  id              String       @id @default(uuid())
+  name            String
+  description     String?
+  permissions     Permission[]
+  admins          Admin[] // array of admins having this role
+  createdAt       DateTime     @default(now())
+  updatedAt       DateTime     @updatedAt
+
+  @@map("roles")
+}
+
+model Permission {
+  id              String  @id @default(uuid())
+  value           String
+  description     String?
+  role            Role    @relation(fields: [roleId], references: [id])
+  roleId          String
+
+  @@map("permissions")
+}
+
+model Medical_Record {
+  id              String                    @id @default(uuid())
+  user            User                      @relation(fields: [userId], references: [id], name: "user_medical_records_FK")
+  userId          String                    @unique
+  title           String
+  details         Json?
+  doctor          User                      @relation(fields: [doctorId], references: [id], name: "doctor_medical_records_FK")
+  doctorId        String
+  createdAt       DateTime                  @default(now())
+  updatedAt       DateTime                  @updatedAt
+  lifetime        Boolean                   @default(false)
+  actionType      MedicalRecordsActionTypes @default(Generic)
+
+  @@map("medicalRecords")
+}
+// model : medical records
+// attachmentId : //TODO: 
+
+// TODO:
+// model : Attachments
