@@ -1,14 +1,16 @@
 import { PrismaService } from '../database/prisma.service';
-import { BadRequestException, Injectable, Logger } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import * as argon from 'argon2';
 import { PUBLIC_FIELDS } from 'src/constants';
 import { Prisma } from '@prisma/client';
-import { PublicUser } from 'src/common/types';
+import { Gender, UserProfile, User } from 'src/graphql';
+import { CreateUserInput } from 'src/graphql/createUserInput.schema';
 @Injectable()
 export class UsersService {
   constructor(private readonly db: PrismaService) {}
 
   async findById(userId: string, select: Prisma.UserSelect) {
+    //TODO: use custom type for this to avoid any unpredicted prisma issues
     const user = await this.db.user.findFirst({
       where: { id: userId },
       select,
@@ -41,19 +43,24 @@ export class UsersService {
     });
   }
 
-  async createUser(userData: Prisma.UserCreateInput): Promise<string> {
+  async createUser(userData: CreateUserInput): Promise<string> {
     const hash = await argon.hash(userData.password);
     delete userData.password;
-    await this.db.user.create({
-      data: { ...userData, password: hash, dob: new Date(userData.dob) },
-      // select : PUBLIC_FIELDS
+    const user = await this.db.user.create({
+      data: {
+        ...userData,
+        gender: Gender[userData.gender],
+        password: hash,
+        dob: new Date(userData.dob),
+      },
+      select: PUBLIC_FIELDS,
     });
 
-    return 'done 👍';
+    return `done 👍 , user ${user.name} is created`;
   }
 
   //   FIXME: dev only
-  async getAll(take?: number, skip?: number): Promise<Partial<PublicUser>[]> {
+  async getAll(take?: number, skip?: number): Promise<Partial<UserProfile>[]> {
     const users = await this.db.user.findMany({
       select: PUBLIC_FIELDS,
       take,
@@ -62,18 +69,21 @@ export class UsersService {
     return users.map(this.mapUserToProfile);
   }
 
-  mapUserToProfile(user): Partial<PublicUser> {
-    const mappedUser = Object.assign({}, user);
-    mappedUser['employmentStatus'] = user.employmentStatus.label;
-    mappedUser['maritalStatus'] = user.maritalStatus.label;
-    mappedUser['educationalLevel'] = user.educationalLevel.label;
-    return mappedUser;
+  mapUserToProfile(user: Partial<User>): Partial<UserProfile> {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const { educationalLevel, employmentStatus, maritalStatus, ...rest } = user;
+
+    const userProfile: Partial<UserProfile> = Object.assign({}, rest);
+
+    userProfile.employmentStatus = user.employmentStatus.label;
+    userProfile.maritalStatus = user.maritalStatus.label;
+    userProfile.educationalLevel = user.educationalLevel.label;
+
+    return userProfile;
   }
 
-  async loggedInUserProfile(
-    userId: string,
-  ): Promise<Partial<PublicUser> | null> {
-    const user: any = await this.findById(userId, PUBLIC_FIELDS);
+  async loggedInUserProfile(userId: string): Promise<Partial<UserProfile>> {
+    const user = await this.findById(userId, PUBLIC_FIELDS);
     if (!user) throw new BadRequestException('no user found');
     return this.mapUserToProfile(user);
   }

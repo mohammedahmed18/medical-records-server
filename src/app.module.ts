@@ -10,6 +10,7 @@ import { DatabaseModule } from './database/database.module';
 import { join } from 'path';
 import { GraphQLModule } from '@nestjs/graphql';
 import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
+import { PermissionGuard } from './common/guards/permission.guard';
 
 @Module({
   imports: [
@@ -19,10 +20,10 @@ import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
     DatabaseModule,
     GraphQLModule.forRoot<ApolloDriverConfig>({
       driver: ApolloDriver,
-      debug: process.env.NODE_ENV === "development",
+      debug: process.env.NODE_ENV === 'development',
       playground: true,
       autoSchemaFile: join(process.cwd(), 'src/schema.gql'),
-      introspection: true
+      introspection: true,
     }),
   ],
   controllers: [AppController],
@@ -31,10 +32,14 @@ import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
       provide: APP_GUARD,
       useClass: AtGuard,
     },
+    {
+      provide: APP_GUARD,
+      useClass: PermissionGuard,
+    },
   ],
 })
 export class AppModule {
   constructor() {
-    GraphQlUtils.registerEnumTypes()
+    GraphQlUtils.registerEnumTypes();
   }
 }

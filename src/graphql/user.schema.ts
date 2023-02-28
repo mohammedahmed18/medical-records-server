@@ -1,47 +1,82 @@
-import { Field, Float, ObjectType } from "@nestjs/graphql";
-import { Gender } from "./enums.schema";
+import { Field, Float, Int, ObjectType } from '@nestjs/graphql';
+import { Decimal } from '@prisma/client/runtime';
+import { Gender, MedicalSpecialization } from './enums.schema';
+import { UserProfile } from './userProfile.schema';
+
+enum UserDetails {
+  employmentStatus,
+  maritalStatus,
+  educationalLevel,
+}
 
 @ObjectType()
-export class User{
-    @Field()
-    id: string;
+export class UserDetail {
+  @Field({ nullable: true })
+  label?: string;
+}
 
-    @Field()
-    nationalId : string;
+export type UserProfileWithoutDetails = Omit<
+  UserProfile,
+  keyof typeof UserDetails
+>;
+@ObjectType()
+export class User implements UserProfileWithoutDetails {
+  @Field()
+  id: string;
 
-    @Field()
-    name: string;
+  @Field()
+  nationalId: string;
 
-    @Field({nullable : true})
-    email?: string;
-    
-    @Field(() => Gender)
-    gender: Gender
+  @Field()
+  name: string;
 
-    @Field(() => Date)
-    dob: Date
+  @Field({ nullable: true })
+  email?: string;
 
-    @Field(() => Float ,{nullable : true})
-    avg_monthly_income: number
+  @Field(() => Gender)
+  gender: keyof typeof Gender;
 
-  
-    @Field(() => Float ,{nullable : true})
-    weight: number
+  @Field(() => Date)
+  dob: Date;
 
-    @Field(() => Float ,{nullable : true})
-    height_cm: number
+  @Field(() => Float, { nullable: true })
+  avg_monthly_income: number;
 
-    @Field(() => String ,{nullable : true})
-    image_src: string;
+  @Field({ nullable: true })
+  weight: string;
 
+  @Field(() => Float, { nullable: true })
+  height_cm: Decimal;
 
-    @Field()
-    employmentStatus: string;
-   
-    @Field()
-    maritalStatus: string;
+  @Field(() => String, { nullable: true })
+  image_src: string;
 
-    @Field()
-    educationalLevel: string;
-    
+  @Field()
+  password: string;
+
+  @Field(() => Date)
+  createdAt: Date;
+
+  @Field(() => Date)
+  updatedAt: Date;
+
+  @Field({ nullable: true })
+  hashedRt: string | null;
+
+  @Field(() => Int)
+  maritalStatusId: number;
+  @Field(() => Int)
+  educationalLevelId: number;
+  @Field(() => Int)
+  employmentStatusId: number;
+
+  @Field(() => UserDetail, { nullable: true })
+  maritalStatus?: UserDetail;
+  @Field(() => UserDetail, { nullable: true })
+  educationalLevel?: UserDetail;
+  @Field(() => UserDetail, { nullable: true })
+  employmentStatus?: UserDetail;
+
+  @Field(() => MedicalSpecialization, { nullable: true })
+  medicalSpecialization?: keyof typeof MedicalSpecialization;
 }
