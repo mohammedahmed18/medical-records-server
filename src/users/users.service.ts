@@ -1,5 +1,5 @@
 import { PrismaService } from '../database/prisma.service';
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import * as argon from 'argon2';
 import { PUBLIC_FIELDS } from 'src/constants';
 import { Prisma } from '@prisma/client';
@@ -84,7 +84,7 @@ export class UsersService {
 
   async loggedInUserProfile(userId: string): Promise<Partial<UserProfile>> {
     const user = await this.findById(userId, PUBLIC_FIELDS);
-    if (!user) throw new BadRequestException('no user found');
+    if (!user) throw new NotFoundException('no user found');
     return this.mapUserToProfile(user);
   }
 }
