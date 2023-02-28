@@ -11,13 +11,15 @@ import { join } from 'path';
 import { GraphQLModule } from '@nestjs/graphql';
 import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
 import { PermissionGuard } from './common/guards/permission.guard';
+import { MedicalRecordsModule } from './medicalRecords/medicalRecords.module';
 
 @Module({
   imports: [
+    DatabaseModule,
     AuthModule,
     UsersModule,
+    MedicalRecordsModule,
     ConfigModule.forRoot({ isGlobal: true }),
-    DatabaseModule,
     GraphQLModule.forRoot<ApolloDriverConfig>({
       driver: ApolloDriver,
       debug: process.env.NODE_ENV === 'development',

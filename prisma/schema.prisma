@@ -170,8 +170,8 @@ model Medical_Record {
   userId          String                    @unique
   title           String
   details         Json?
-  doctor          User                      @relation(fields: [doctorId], references: [id], name: "doctor_medical_records_FK")
-  doctorId        String
+  doctor          User?                      @relation(fields: [doctorId], references: [id], name: "doctor_medical_records_FK")
+  doctorId        String?
   createdAt       DateTime                  @default(now())
   updatedAt       DateTime                  @updatedAt
   lifetime        Boolean                   @default(false)
