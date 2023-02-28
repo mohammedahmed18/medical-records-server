@@ -1,12 +1,10 @@
-import { GraphQlUtils } from './../../utils/graphqlUtils';
+import { ContextUtils } from './../../utils/contextUtils';
 import { JwtPayload } from './../types/index';
 import { createParamDecorator, ExecutionContext } from '@nestjs/common';
 
 export const getCurrentUser = createParamDecorator(
   (field: keyof JwtPayload, ctx: ExecutionContext) => {
-    const request = GraphQlUtils.isGraphQl(ctx)
-      ? GraphQlUtils.getGraphQlContextParams(ctx).req
-      : ctx.switchToHttp().getRequest();
+    const request = ContextUtils.getRequest(ctx);
     const currrentUser = request.user;
 
     if (!field) {

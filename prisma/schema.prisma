@@ -121,6 +121,7 @@ model User {
 
   admin                 Admin? // it's nullable because not every user is an admin of course
   medicalRecords        Medical_Record[] @relation("user_medical_records_FK")
+  // FIXME: writtenMedicalRecors is not descriptive
   writtenMedicalRecors  Medical_Record[] @relation("doctor_medical_records_FK") // this will return array of all the records that the doctor wrote , 
 
   @@map("users")
