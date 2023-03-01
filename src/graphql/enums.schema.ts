@@ -46,3 +46,14 @@ export enum MedicalSpecialization {
   Toxicologic = 'Toxicologic',
   Urologic = 'Urologic',
 }
+
+export enum MedicalRecordsActionTypes {
+  Generic = 'Generic',
+  Diagnosis = 'Diagnosis',
+  Surgery = 'Surgery',
+  Birth = 'Birth',
+  Death = 'Death',
+  Illness = 'Illness',
+  Allergy = 'Allergy',
+  LabTest = 'LabTest',
+}

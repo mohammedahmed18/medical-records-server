@@ -13,6 +13,6 @@ export class MedicalRecordsController {
     @getCurrentUser('id') userId: string,
     @Body() body: getMedicalRecordsArgs,
   ) {
-    return this.medicalRecordsService.getUserRecords(userId, body);
+    return this.medicalRecordsService.getUserMedicalRecords(userId, body);
   }
 }

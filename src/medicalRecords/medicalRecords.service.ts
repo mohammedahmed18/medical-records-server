@@ -7,7 +7,7 @@ import { getMedicalRecordsArgs } from './types';
 export class MedicalRecordsService {
   constructor(private prisma: PrismaService) {}
 
-  async getUserRecords(userId: string, options: getMedicalRecordsArgs) {
+  async getUserMedicalRecords(userId: string, options: getMedicalRecordsArgs) {
     const records = await this.prisma.medical_Record.findMany({
       where: { userId },
       take: options.take,
@@ -18,4 +18,8 @@ export class MedicalRecordsService {
     });
     return records;
   }
+
+  // async createUserMedicalRecord(){
+
+  // }
 }
