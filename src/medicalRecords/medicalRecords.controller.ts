@@ -10,7 +10,7 @@ export class MedicalRecordsController {
 
   @Get()
   async getAllRecords(
-    @getCurrentUser('id') userId: string,
+    @getCurrentUser({ field: 'id' }) userId: string,
     @Body() body: getMedicalRecordsArgs,
   ) {
     return this.medicalRecordsService.getUserMedicalRecords(userId, body);
