@@ -1,6 +1,10 @@
 import { Logger, ExecutionContext } from '@nestjs/common';
 import { GqlExecutionContext, registerEnumType } from '@nestjs/graphql';
-import { Gender, MedicalSpecialization } from 'src/graphql';
+import {
+  Gender,
+  MedicalRecordsActionTypes,
+  MedicalSpecialization,
+} from 'src/graphql';
 
 type regiteredEnum<T> = {
   enum: T;
@@ -17,6 +21,11 @@ export class GraphQlUtils {
     {
       enum: MedicalSpecialization,
       name: 'MedicalSpecialization',
+      description: null,
+    },
+    {
+      enum: MedicalRecordsActionTypes,
+      name: 'MedicalRecordsActionTypes',
       description: null,
     },
   ];

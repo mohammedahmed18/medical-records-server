@@ -1,5 +1,4 @@
 import { GraphQlUtils } from './utils/graphqlUtils';
-import { AtGuard } from './common/guards/at.guard';
 import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AuthModule } from './auth/auth.module';
@@ -10,8 +9,9 @@ import { DatabaseModule } from './database/database.module';
 import { join } from 'path';
 import { GraphQLModule } from '@nestjs/graphql';
 import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
-import { PermissionGuard } from './common/guards/permission.guard';
+import { AtGuard } from './common/guards';
 import { MedicalRecordsModule } from './medicalRecords/medicalRecords.module';
+import { AdminModule } from './admin/admin.module';
 
 @Module({
   imports: [
@@ -27,16 +27,13 @@ import { MedicalRecordsModule } from './medicalRecords/medicalRecords.module';
       autoSchemaFile: join(process.cwd(), 'src/schema.gql'),
       introspection: true,
     }),
+    AdminModule,
   ],
   controllers: [AppController],
   providers: [
     {
       provide: APP_GUARD,
       useClass: AtGuard,
-    },
-    {
-      provide: APP_GUARD,
-      useClass: PermissionGuard,
     },
   ],
 })
