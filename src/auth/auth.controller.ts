@@ -5,6 +5,7 @@ import {
   HttpCode,
   HttpStatus,
   Post,
+  Response,
   UseGuards,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
@@ -13,6 +14,7 @@ import { RtGuard, AtGuard } from './../common/guards';
 import { getCurrentUser, UseValidation, Public } from 'src/common/decorators';
 import { loginSchema } from './validation-schemas';
 import { AUTH_BASE_URL } from 'src/constants';
+import { Response as ExpressResponse } from 'express';
 
 @Controller(AUTH_BASE_URL)
 export class AuthController {
@@ -22,8 +24,9 @@ export class AuthController {
   @Public()
   @UseValidation(loginSchema)
   @HttpCode(HttpStatus.OK)
-  async login(@Body() body: UserLoginDto) {
-    return this.authService.login(body);
+  async login(@Body() body: UserLoginDto, @Response() res: ExpressResponse) {
+    const tokens = await this.authService.login(body);
+    res.cookie('token', tokens.accessToken).json(tokens).end();
   }
 
   @Post('refresh')

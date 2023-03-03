@@ -1,6 +1,13 @@
 import { createUserSchema } from './validation-schemas';
 import { UsersService } from 'src/users/users.service';
-import { Controller, Post, Body, Get } from '@nestjs/common';
+import {
+  Controller,
+  Post,
+  Body,
+  Get,
+  HttpCode,
+  HttpStatus,
+} from '@nestjs/common';
 import { getCurrentUser, Public, UseValidation } from 'src/common/decorators';
 import { USERS_BASE_URL } from 'src/constants';
 
@@ -12,6 +19,7 @@ export class UsersController {
   @Post()
   @Public()
   @UseValidation(createUserSchema)
+  @HttpCode(HttpStatus.CREATED)
   async createUser(@Body() data): Promise<string> {
     return await this.usersService.createUser(data);
   }
