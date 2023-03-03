@@ -12,10 +12,12 @@ import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
 import { AtGuard } from './common/guards';
 import { MedicalRecordsModule } from './medicalRecords/medicalRecords.module';
 import { AdminModule } from './admin/admin.module';
+import { RedisConfigModule } from './redis/redis.module';
 
 @Module({
   imports: [
     DatabaseModule,
+    RedisConfigModule,
     AuthModule,
     UsersModule,
     MedicalRecordsModule,
