@@ -106,7 +106,7 @@ model User {
   avg_monthly_income    Float?
   weight                String?
   height_cm             Decimal?
-  image_src             String   @default("/images/default_pp.jpg")
+  image_src             String?
   
   maritalStatus         Marital_Status @relation(fields: [maritalStatusId], references: [id])
   maritalStatusId       Int

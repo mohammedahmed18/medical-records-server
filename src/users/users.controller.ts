@@ -7,10 +7,14 @@ import {
   Get,
   HttpCode,
   HttpStatus,
+  UseInterceptors,
+  UploadedFiles,
+  UploadedFile,
 } from '@nestjs/common';
 import { getCurrentUser, Public, UseValidation } from 'src/common/decorators';
 import { USERS_BASE_URL } from 'src/constants';
 import { CacheService } from 'src/redis/cache.service';
+import { FileInterceptor } from '@nestjs/platform-express';
 
 @Controller(USERS_BASE_URL)
 export class UsersController {
@@ -40,23 +44,14 @@ export class UsersController {
     return await this.usersService.loggedInUserProfile(userId);
   }
 
-  @Get('/name')
+  @UseInterceptors(FileInterceptor('image'))
   @Public()
-  async tryCache() {
-    return this.cacheService.getName();
-  }
-
-  @Get('/sname')
-  @Public()
-  async storeCache() {
-    await this.cacheService.storeName();
-    return 'done';
-  }
-
-  @Get('/flush')
-  @Public()
-  async flush() {
-    await this.cacheService.flushAll();
-    return 'all flushed';
+  @HttpCode(HttpStatus.OK)
+  @Post('profile')
+  async uploadImage(
+    @UploadedFile() file: Express.Multer.File,
+    @Body('userId') userId,
+  ) {
+    return await this.usersService.uploadUserProfileImage(userId, file);
   }
 }

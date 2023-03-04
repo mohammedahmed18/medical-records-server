@@ -5,15 +5,7 @@ import { Cache } from 'cache-manager';
 export class CacheService {
   constructor(@Inject(CACHE_MANAGER) private cacheManager: Cache) {}
 
-  async storeName() {
-    return await this.cacheManager.set('name', 'ahmed');
-  }
-
-  async getName() {
-    return await this.cacheManager.get('name');
-  }
-
   async flushAll() {
-    return await this.cacheManager.store.reset();
+    return await this.cacheManager.reset();
   }
 }
