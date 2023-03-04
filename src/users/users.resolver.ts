@@ -1,11 +1,9 @@
 import { UserProfile } from './../graphql/userProfile.schema';
 import { UsersService } from './users.service';
 import { Resolver, Query, Mutation, Args } from '@nestjs/graphql';
-import { getCurrentUser, Public } from 'src/common/decorators';
+import { getCurrentUser, Public, UseValidation } from 'src/common/decorators';
 import { CreateUserInput } from 'src/graphql';
-import { UsePipes } from '@nestjs/common';
 import { createUserSchema } from './validation-schemas';
-import { JoiValidationPipe } from 'src/common/pipes';
 
 @Resolver(() => UserProfile)
 export class UserResolver {
@@ -18,12 +16,12 @@ export class UserResolver {
   }
 
   @Query(() => UserProfile)
-  async me(@getCurrentUser('id') userId: string) {
+  async me(@getCurrentUser({ field: 'id' }) userId: string) {
     return await this.userService.loggedInUserProfile(userId);
   }
 
   @Mutation(() => String)
-  @UsePipes(new JoiValidationPipe(createUserSchema))
+  @UseValidation(createUserSchema)
   async createUser(@Args('data') CreateUserInput: CreateUserInput) {
     return await this.userService.createUser(CreateUserInput);
   }

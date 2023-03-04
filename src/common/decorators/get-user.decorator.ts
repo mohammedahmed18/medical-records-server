@@ -1,15 +1,26 @@
 import { ContextUtils } from './../../utils/contextUtils';
 import { JwtPayload } from './../types/index';
-import { createParamDecorator, ExecutionContext } from '@nestjs/common';
+import {
+  createParamDecorator,
+  ExecutionContext,
+  ForbiddenException,
+} from '@nestjs/common';
 
+type getCurrentUserOptions = {
+  field?: keyof JwtPayload;
+  isDoctor?: boolean;
+};
 export const getCurrentUser = createParamDecorator(
-  (field: keyof JwtPayload, ctx: ExecutionContext) => {
+  (options: getCurrentUserOptions, ctx: ExecutionContext) => {
     const request = ContextUtils.getRequest(ctx);
     const currrentUser = request.user;
 
-    if (!field) {
+    if (options.isDoctor && !currrentUser.medicalSpecialization) {
+      throw new ForbiddenException('only doctors are allowed');
+    }
+    if (!options.field) {
       return currrentUser;
     }
-    return currrentUser[field];
+    return currrentUser[options.field];
   },
 );

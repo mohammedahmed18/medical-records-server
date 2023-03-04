@@ -1,4 +1,3 @@
-import { Public } from './../common/decorators/public.decorator';
 import { UserLoginDto } from './dto/user-login.dto';
 import {
   Body,
@@ -6,27 +5,28 @@ import {
   HttpCode,
   HttpStatus,
   Post,
+  Response,
   UseGuards,
-  UsePipes,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { JwtPayload } from 'src/common/types';
 import { RtGuard, AtGuard } from './../common/guards';
-import { getCurrentUser } from 'src/common/decorators';
-import { JoiValidationPipe } from 'src/common/pipes';
+import { getCurrentUser, UseValidation, Public } from 'src/common/decorators';
 import { loginSchema } from './validation-schemas';
-import { AUTH_BASE_URL, LOGIN_URL } from 'src/constants';
+import { AUTH_BASE_URL } from 'src/constants';
+import { Response as ExpressResponse } from 'express';
 
 @Controller(AUTH_BASE_URL)
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
-  @Post(LOGIN_URL)
+  @Post('/login')
   @Public()
-  @UsePipes(new JoiValidationPipe(loginSchema))
+  @UseValidation(loginSchema)
   @HttpCode(HttpStatus.OK)
-  async login(@Body() body: UserLoginDto) {
-    return this.authService.login(body);
+  async login(@Body() body: UserLoginDto, @Response() res: ExpressResponse) {
+    const tokens = await this.authService.login(body);
+    res.cookie('token', tokens.accessToken).json(tokens).end();
   }
 
   @Post('refresh')
@@ -40,7 +40,7 @@ export class AuthController {
   @Post('logout')
   @UseGuards(AtGuard)
   @HttpCode(HttpStatus.OK)
-  async logout(@getCurrentUser('id') id: string) {
+  async logout(@getCurrentUser({ field: 'id' }) id: string) {
     return this.authService.logout(id);
   }
 }

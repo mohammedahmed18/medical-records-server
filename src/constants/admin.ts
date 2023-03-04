@@ -1,0 +1,1 @@
+export const DEFAULT_ADMIN_USERNAME = 'DEFAULT_ADMIN';

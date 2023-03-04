@@ -1,10 +1,10 @@
 import { PrismaService } from '../database/prisma.service';
 import { error_msgs } from './../constants/errors';
-import {User} from '@prisma/client'
+import { User } from '@prisma/client';
 import { UserLoginDto } from './dto/user-login.dto';
 import { ForbiddenException, Injectable } from '@nestjs/common';
 import { UsersService } from 'src/users/users.service';
-import { TOKEN_LIFETIME , RT_TOKEN_LIFETIME } from 'src/constants';
+import { TOKEN_LIFETIME, RT_TOKEN_LIFETIME } from 'src/constants';
 import * as argon2 from 'argon2';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
@@ -72,7 +72,7 @@ export class AuthService {
   }
 
   async generateJWT(user: User) {
-    const { password,hashedRt, ...payload } = user; //seperate the password from the payload
+    const { password, hashedRt, ...payload } = user; //seperate the password from the payload
 
     const [at, rt] = await Promise.all([
       this.jwt.signAsync(payload, {

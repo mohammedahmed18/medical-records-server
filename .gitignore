@@ -34,5 +34,8 @@ lerna-debug.log*
 !.vscode/launch.json
 !.vscode/extensions.json
 .env
-.git*
+.git
+.git2
 medical_records_api_docs
+redis.conf/
+redis-data/

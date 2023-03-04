@@ -1,19 +1,34 @@
 import { createUserSchema } from './validation-schemas';
-import { JoiValidationPipe } from 'src/common/pipes';
 import { UsersService } from 'src/users/users.service';
-import { Controller, Post, Body, UsePipes, Get } from '@nestjs/common';
-import { getCurrentUser, Public } from 'src/common/decorators';
-import { USERS_BASE_URL, USER_PROFILE_URL } from 'src/constants';
+import {
+  Controller,
+  Post,
+  Body,
+  Get,
+  HttpCode,
+  HttpStatus,
+  UseInterceptors,
+  UploadedFiles,
+  UploadedFile,
+} from '@nestjs/common';
+import { getCurrentUser, Public, UseValidation } from 'src/common/decorators';
+import { USERS_BASE_URL } from 'src/constants';
+import { CacheService } from 'src/redis/cache.service';
+import { FileInterceptor } from '@nestjs/platform-express';
 
 @Controller(USERS_BASE_URL)
 export class UsersController {
-  constructor(private readonly usersService: UsersService) {}
+  constructor(
+    private readonly usersService: UsersService,
+    private cacheService: CacheService,
+  ) {}
 
   //   FIXME: note this is only for testing remove it when the project is done
   @Post()
   @Public()
-  @UsePipes(new JoiValidationPipe(createUserSchema))
-  async createUser(@Body() data) : Promise<string> {
+  @UseValidation(createUserSchema)
+  @HttpCode(HttpStatus.CREATED)
+  async createUser(@Body() data): Promise<string> {
     return await this.usersService.createUser(data);
   }
 
@@ -24,10 +39,19 @@ export class UsersController {
     return await this.usersService.getAll(body.take, body.skip);
   }
 
-
-  @Get(USER_PROFILE_URL)
-  async getUserProfile(@getCurrentUser("id") userId : string){
-      return await this.usersService.loggedInUserProfile(userId);
+  @Get('/me')
+  async getUserProfile(@getCurrentUser({ field: 'id' }) userId: string) {
+    return await this.usersService.loggedInUserProfile(userId);
   }
 
+  @UseInterceptors(FileInterceptor('image'))
+  @Public()
+  @HttpCode(HttpStatus.OK)
+  @Post('profile')
+  async uploadImage(
+    @UploadedFile() file: Express.Multer.File,
+    @Body('userId') userId,
+  ) {
+    return await this.usersService.uploadUserProfileImage(userId, file);
+  }
 }

@@ -77,6 +77,10 @@ enum MedicalSpecialization {
   Urologic
 }
 
+type LoginResponseType {
+  accessToken: String!
+}
+
 type Query {
   users: [UserProfile!]!
   me: UserProfile!
@@ -84,6 +88,7 @@ type Query {
 
 type Mutation {
   createUser(data: CreateUserInput!): String!
+  adminLogin(credentials: LoginInputType!): LoginResponseType!
 }
 
 input CreateUserInput {
@@ -99,4 +104,9 @@ input CreateUserInput {
   maritalStatusId: Int!
   educationalLevelId: Int!
   employmentStatusId: Int!
+}
+
+input LoginInputType {
+  username: String!
+  password: String!
 }
