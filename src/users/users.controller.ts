@@ -8,13 +8,13 @@ import {
   HttpCode,
   HttpStatus,
   UseInterceptors,
-  UploadedFiles,
   UploadedFile,
 } from '@nestjs/common';
 import { getCurrentUser, Public, UseValidation } from 'src/common/decorators';
 import { USERS_BASE_URL } from 'src/constants';
 import { CacheService } from 'src/redis/cache.service';
 import { FileInterceptor } from '@nestjs/platform-express';
+import { FileUploadValidationPipe } from './pipes';
 
 @Controller(USERS_BASE_URL)
 export class UsersController {
@@ -49,7 +49,7 @@ export class UsersController {
   @HttpCode(HttpStatus.OK)
   @Post('profile')
   async uploadImage(
-    @UploadedFile() file: Express.Multer.File,
+    @UploadedFile(FileUploadValidationPipe) file: Express.Multer.File,
     @Body('userId') userId,
   ) {
     return await this.usersService.uploadUserProfileImage(userId, file);

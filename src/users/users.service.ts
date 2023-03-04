@@ -96,6 +96,7 @@ export class UsersService {
     return this.mapUserToProfile(user);
   }
 
+  // TODO: if the user has image delete the prev image
   async uploadUserProfileImage(
     userId: string,
     file: Express.Multer.File,
@@ -106,6 +107,11 @@ export class UsersService {
     const user = await this.findById(userId);
     if (!user) throw new NotFoundException('user not found');
 
+    if (user.image_src) {
+      // delete the prev image from cloudinary
+      // we don't want to use await here to not block the code
+      this.cloudinaryService.deleteImage(user.image_src);
+    }
     const image_url: string = await this.cloudinaryService
       .uploadImage(file)
       .catch((err) => {
