@@ -15,4 +15,15 @@ export class CloudinaryService {
       Readable.from(file.buffer).pipe(upload); // covert buffer to readable stream
     });
   }
+  getImageNameByUrl(url: string) {
+    const arr = url.split('/');
+    const imageWithPrefix = arr[arr.length - 1];
+
+    return imageWithPrefix.split('.')[0];
+  }
+
+  async deleteImage(url: string): Promise<void> {
+    const imageName = this.getImageNameByUrl(url);
+    await v2.uploader.destroy(imageName);
+  }
 }

@@ -17,7 +17,7 @@ export class UsersService {
     private readonly cloudinaryService: CloudinaryService,
   ) {}
 
-  async findById(userId: string, select: Prisma.UserSelect = PUBLIC_FIELDS) {
+  async findById(userId: string, select: Prisma.UserSelect = null) {
     //TODO: use custom type for this to avoid any unpredicted prisma issues
     const user = await this.db.user.findFirst({
       where: { id: userId },
@@ -29,9 +29,10 @@ export class UsersService {
     return null;
   }
 
-  async findByNationalId(nationalId: string) {
+  async findByNationalId(nationalId: string, select: Prisma.UserSelect = null) {
     const user = await this.db.user.findFirst({
       where: { nationalId },
+      select,
     });
     if (user) {
       return user;
@@ -106,6 +107,11 @@ export class UsersService {
     const user = await this.findById(userId);
     if (!user) throw new NotFoundException('user not found');
 
+    if (user.image_src) {
+      // delete the prev image from cloudinary
+      // we don't want to use await here to not block the code
+      this.cloudinaryService.deleteImage(user.image_src);
+    }
     const image_url: string = await this.cloudinaryService
       .uploadImage(file)
       .catch((err) => {
