@@ -1,1 +1,1 @@
-export * from './fileSizeValidation.pipe';
+export * from './fileUploadValidation.pipe';

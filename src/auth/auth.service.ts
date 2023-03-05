@@ -1,6 +1,6 @@
 import { PrismaService } from '../database/prisma.service';
 import { error_msgs } from './../constants/errors';
-import { User } from '@prisma/client';
+// import { User } from '@prisma/client';
 import { UserLoginDto } from './dto/user-login.dto';
 import { ForbiddenException, Injectable } from '@nestjs/common';
 import { UsersService } from 'src/users/users.service';
@@ -71,7 +71,7 @@ export class AuthService {
     return null;
   }
 
-  async generateJWT(user: User) {
+  async generateJWT(user) {
     const { password, hashedRt, ...payload } = user; //seperate the password from the payload
 
     const [at, rt] = await Promise.all([
