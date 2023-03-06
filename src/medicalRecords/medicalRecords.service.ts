@@ -8,13 +8,16 @@ export class MedicalRecordsService {
   constructor(private prisma: PrismaService) {}
 
   async getUserMedicalRecords(userId: string, options: getMedicalRecordsArgs) {
+    const whereCriteria = { userId };
+    if (options.actionType) whereCriteria['actionType'] = options.actionType;
     const records = await this.prisma.medical_Record.findMany({
-      where: { userId },
+      where: whereCriteria,
       take: options.take,
       skip: options.skip,
       include: {
         doctor: options.doctor ? { select: DOCTOR_SELECT_FIELDS } : false,
       },
+      orderBy: { createdAt: 'desc' },
     });
     return records;
   }
