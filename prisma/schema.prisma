@@ -167,9 +167,9 @@ model Permission {
 model Medical_Record {
   id              String                    @id @default(uuid())
   user            User                      @relation(fields: [userId], references: [id], name: "user_medical_records_FK")
-  userId          String                    @unique
+  userId          String                    
   title           String
-  details         Json?
+  details         Json?                     @default("[]")
   doctor          User?                      @relation(fields: [doctorId], references: [id], name: "doctor_medical_records_FK")
   doctorId        String?
   createdAt       DateTime                  @default(now())
