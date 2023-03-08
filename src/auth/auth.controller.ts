@@ -13,7 +13,7 @@ import { JwtPayload } from 'src/common/types';
 import { RtGuard, AtGuard } from './../common/guards';
 import { getCurrentUser, UseValidation, Public } from 'src/common/decorators';
 import { loginSchema } from './validation-schemas';
-import { AUTH_BASE_URL } from 'src/constants';
+import { AUTH_BASE_URL, CLIENT_URL, TOKEN_LIFETIME } from 'src/constants';
 import { Response as ExpressResponse } from 'express';
 import isProd from 'src/utils/isProd';
 
@@ -31,7 +31,9 @@ export class AuthController {
       .cookie('token', tokens.accessToken, {
         httpOnly: true,
         sameSite: isProd ? 'none' : true,
+        maxAge: TOKEN_LIFETIME,
         secure: isProd ? true : false,
+        domain: CLIENT_URL,
       })
       .json(tokens)
       .end();
