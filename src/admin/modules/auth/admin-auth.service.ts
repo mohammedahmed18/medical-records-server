@@ -32,9 +32,9 @@ export class AdminAuthService {
   }
 
   async generateAdminToken(admin) {
-    const { password, ...payload } = admin;
-    const token = this.jwt.signAsync(payload, {
-      secret: this.config.get('JWT_SECRET'),
+    delete admin.password;
+    const token = this.jwt.signAsync(admin, {
+      secret: this.config.get('ADMIN_JWT_SECRET'),
       expiresIn: ADMIN_TOKEN_LIFETIME,
     });
     return token;
