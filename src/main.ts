@@ -12,7 +12,7 @@ async function bootstrap() {
   app.useGlobalInterceptors(new ErrorInterceptor());
   app.use(cookieParser(process.env.COOKIE_SECRET));
   app.enableCors({
-    origin: true,
+    origin: 'https://medical-records-web.vercel.app',
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
     credentials: true,
   });
