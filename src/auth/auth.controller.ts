@@ -13,7 +13,7 @@ import { JwtPayload } from 'src/common/types';
 import { RtGuard, AtGuard } from './../common/guards';
 import { getCurrentUser, UseValidation, Public } from 'src/common/decorators';
 import { loginSchema } from './validation-schemas';
-import { AUTH_BASE_URL, CLIENT_URL, TOKEN_LIFETIME } from 'src/constants';
+import { AUTH_BASE_URL, TOKEN_LIFETIME } from 'src/constants';
 import { Response as ExpressResponse } from 'express';
 import isProd from 'src/utils/isProd';
 
@@ -33,8 +33,7 @@ export class AuthController {
         sameSite: isProd ? 'none' : true,
         maxAge: TOKEN_LIFETIME,
         secure: isProd ? true : false,
-        path : "/login"
-        // domain: CLIENT_URL.replace('https://', ''),
+        domain: "vercel.app",
       })
       .json(tokens)
       .end();
