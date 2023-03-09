@@ -33,6 +33,7 @@ export class AuthController {
         sameSite: isProd ? 'none' : true,
         maxAge: TOKEN_LIFETIME,
         secure: isProd ? true : false,
+        path : "/login"
         // domain: CLIENT_URL.replace('https://', ''),
       })
       .json(tokens)
