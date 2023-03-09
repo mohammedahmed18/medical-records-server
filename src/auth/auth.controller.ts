@@ -31,9 +31,9 @@ export class AuthController {
       .cookie('token', tokens.accessToken, {
         httpOnly: true,
         sameSite: isProd ? 'none' : true,
-        maxAge: TOKEN_LIFETIME,
+        expires : new Date(Date.now() + TOKEN_LIFETIME * 1000),
         secure: isProd ? true : false,
-        domain: "vercel.app",
+        domain : ".vercel.app"
       })
       .json(tokens)
       .end();
