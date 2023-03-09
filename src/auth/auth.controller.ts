@@ -33,7 +33,6 @@ export class AuthController {
         sameSite: isProd ? 'none' : true,
         expires : new Date(Date.now() + TOKEN_LIFETIME * 1000),
         secure: isProd ? true : false,
-        domain : ".vercel.app"
       })
       .json(tokens)
       .end();
