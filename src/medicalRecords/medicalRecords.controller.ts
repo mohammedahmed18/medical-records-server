@@ -1,4 +1,4 @@
-import { Body, Controller, Get } from '@nestjs/common';
+import { Query, Controller, Get } from '@nestjs/common';
 import { getCurrentUser, UseValidation } from 'src/common/decorators';
 import { MedicalRecords_BASE_URL } from 'src/constants';
 import { getMedicalRecordsArgs } from './types';
@@ -13,7 +13,7 @@ export class MedicalRecordsController {
   @UseValidation(getMedicalRecordsScheam)
   async getAllRecords(
     @getCurrentUser({ field: 'id' }) userId,
-    @Body() body: getMedicalRecordsArgs,
+    @Query() body: getMedicalRecordsArgs,
   ) {
     return this.medicalRecordsService.getUserMedicalRecords(userId, body);
   }
