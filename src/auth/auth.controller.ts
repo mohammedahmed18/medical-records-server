@@ -56,6 +56,12 @@ export class AuthController {
     @Response() res: ExpressResponse,
   ) {
     const success = await this.authService.logout(id);
-    res.clearCookie(this.TOKEN_COOKIE).send(success);
+    res
+      .clearCookie(this.TOKEN_COOKIE, {
+        httpOnly: true,
+        sameSite: isProd ? 'none' : 'lax',
+        secure: isProd,
+      })
+      .send(success);
   }
 }
