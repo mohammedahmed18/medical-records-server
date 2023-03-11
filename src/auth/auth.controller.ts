@@ -21,7 +21,7 @@ import isProd from 'src/utils/isProd';
 @Controller(AUTH_BASE_URL)
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
-
+  private readonly TOKEN_COOKIE = 'token';
   @Post('/login')
   @Public()
   @UseValidation(loginSchema)
@@ -30,10 +30,10 @@ export class AuthController {
     const tokens = await this.authService.login(body);
     res.header('Access-Control-Allow-Origin', CLIENT_URL);
     res
-      .cookie('token', tokens.accessToken, {
+      .cookie(this.TOKEN_COOKIE, tokens.accessToken, {
         httpOnly: true,
-        sameSite: isProd ? 'none' : "lax",
-        expires : new Date(Date.now() + TOKEN_LIFETIME * 1000),
+        sameSite: isProd ? 'none' : 'lax',
+        expires: new Date(Date.now() + TOKEN_LIFETIME * 1000),
         secure: isProd,
       })
       .json(tokens)
@@ -51,7 +51,11 @@ export class AuthController {
   @Post('logout')
   @UseGuards(AtGuard)
   @HttpCode(HttpStatus.OK)
-  async logout(@getCurrentUser({ field: 'id' }) id: string) {
-    return this.authService.logout(id);
+  async logout(
+    @getCurrentUser({ field: 'id' }) id: string,
+    @Response() res: ExpressResponse,
+  ) {
+    const success = await this.authService.logout(id);
+    res.clearCookie(this.TOKEN_COOKIE).send(success);
   }
 }
