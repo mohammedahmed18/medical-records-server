@@ -21,7 +21,7 @@ export class ErrorInterceptor implements NestInterceptor {
           err.code === prismaErrors.INSERT_UNIQUE
         )
           throw new CustomError({
-            msg: error_msgs.RESOURCE_ALREADY_EXISTS(err.meta?.target[0]),
+            message: error_msgs.RESOURCE_ALREADY_EXISTS(err.meta?.target[0]),
             statusCode: 400,
             errorCode: prismaErrors.INSERT_UNIQUE,
           });
@@ -31,20 +31,23 @@ export class ErrorInterceptor implements NestInterceptor {
           if (typeof err.response === 'string') {
             return throwError(
               () =>
-                new CustomError({ msg: err.response, statusCode: err.status }),
+                new CustomError({
+                  message: err.response,
+                  statusCode: err.status,
+                }),
             );
           }
           const { message, errorCode, statusCode } = err.response;
           return throwError(
-            () => new CustomError({ msg: message, errorCode, statusCode }),
+            () => new CustomError({ message: message, errorCode, statusCode }),
           );
         } else {
           // something went wrong
           // TODO: for now we will show the error for the sake of development but later we shouldn't show sensitive information about the server for users
           Logger.error('::: ' + err.message);
-          // return throwError(() => new CustomError({msg : "internal server error",statusCode : 500}) )
+          // return throwError(() => new CustomError({message : "internal server error",statusCode : 500}) )
           return throwError(
-            () => new CustomError({ msg: err.message, statusCode: 500 }),
+            () => new CustomError({ message: err.message, statusCode: 500 }),
           );
         }
       }),

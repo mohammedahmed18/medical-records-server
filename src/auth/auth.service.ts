@@ -1,5 +1,5 @@
 import { PrismaService } from '../database/prisma.service';
-import { error_msgs } from './../constants/errors';
+import { error_msgs, INVALID_LOGIN } from './../constants/errors';
 // import { User } from '@prisma/client';
 import { UserLoginDto } from './dto/user-login.dto';
 import { ForbiddenException, Injectable } from '@nestjs/common';
@@ -8,6 +8,7 @@ import { TOKEN_LIFETIME, RT_TOKEN_LIFETIME } from 'src/constants';
 import * as argon2 from 'argon2';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
+import { CustomError } from 'src/common/errors';
 
 @Injectable()
 export class AuthService {
@@ -23,7 +24,13 @@ export class AuthService {
   async login(credentials: UserLoginDto) {
     const _user = await this.validate(credentials);
 
-    if (!_user) throw new ForbiddenException(error_msgs.UNAUTHORIZED_LOGIN);
+    // if (!_user) throw new ForbiddenException(error_msgs.UNAUTHORIZED_LOGIN);
+    if (!_user)
+      throw new CustomError({
+        message: error_msgs.UNAUTHORIZED_LOGIN,
+        statusCode: 401,
+        errorCode: INVALID_LOGIN,
+      });
 
     const tokens = await this.generateJWT(_user);
     await this.userService.updateRtHash(_user.id, tokens.refreshToken);

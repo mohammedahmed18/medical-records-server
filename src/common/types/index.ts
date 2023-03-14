@@ -20,7 +20,7 @@ export type AdminPayload = {
 };
 
 export type CustomErrorOptions = {
-  msg: string;
+  message: string;
   statusCode?: HttpStatus;
   errorCode?: string;
 };
