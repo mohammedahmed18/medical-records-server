@@ -32,9 +32,10 @@ export class AuthController {
     res
       .cookie(this.TOKEN_COOKIE, tokens.accessToken, {
         httpOnly: true,
-        sameSite: isProd ? 'strict' : 'lax',
+        sameSite: isProd ? 'none' : 'lax',
         expires: new Date(Date.now() + TOKEN_LIFETIME * 1000),
         secure: isProd,
+        domain: CLIENT_URL.replace('https://', ''),
       })
       .json(tokens)
       .end();
