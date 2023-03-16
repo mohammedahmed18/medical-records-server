@@ -35,7 +35,8 @@ export class AuthController {
         sameSite: isProd ? 'none' : 'lax',
         expires: new Date(Date.now() + TOKEN_LIFETIME * 1000),
         secure: isProd,
-        domain: '.' + CLIENT_URL.replace('https://', '').replace('http://', ''),
+        path: '/',
+        domain: CLIENT_URL.replace('https://', '').replace('http://', ''),
       })
       .json(tokens)
       .end();
