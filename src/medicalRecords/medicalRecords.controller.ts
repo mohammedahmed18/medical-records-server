@@ -12,7 +12,7 @@ export class MedicalRecordsController {
   @Get()
   @UseValidation(getMedicalRecordsScheam)
   async getAllRecords(
-    @getCurrentUser({ field: 'id' }) userId,
+    @getCurrentUser('id') userId,
     @Query() body: getMedicalRecordsArgs,
   ) {
     return this.medicalRecordsService.getUserMedicalRecords(userId, body);

@@ -3,3 +3,4 @@ export * from './get-user.decorator';
 export * from './permission';
 export * from './admin.decorator';
 export * from './validation.decorator';
+export * from './doctor.decorator';

@@ -52,7 +52,7 @@ export class AuthController {
   @UseGuards(AtGuard)
   @HttpCode(HttpStatus.OK)
   async logout(
-    @getCurrentUser({ field: 'id' }) id: string,
+    @getCurrentUser('id') id: string,
     @Response() res: ExpressResponse,
   ) {
     const success = await this.authService.logout(id);

@@ -11,6 +11,7 @@ export type JwtPayload = {
   iat: number;
   exp: number;
   refreshToken?: string;
+  medicalSpecialization: string | null;
 };
 
 export type AdminPayload = {

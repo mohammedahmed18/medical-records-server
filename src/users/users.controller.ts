@@ -40,7 +40,7 @@ export class UsersController {
   }
 
   @Get('/me')
-  async getUserProfile(@getCurrentUser({ field: 'id' }) userId: string) {
+  async getUserProfile(@getCurrentUser('id') userId: string) {
     return await this.usersService.loggedInUserProfile(userId);
   }
 
