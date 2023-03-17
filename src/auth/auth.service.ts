@@ -33,7 +33,7 @@ export class AuthService {
       });
 
     const tokens = await this.generateJWT(_user);
-    await this.userService.updateRtHash(_user.id, tokens.refreshToken);
+    // await this.userService.updateRtHash(_user.id, tokens.refreshToken);
     return tokens;
   }
 
