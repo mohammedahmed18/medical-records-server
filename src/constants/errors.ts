@@ -11,3 +11,5 @@ export const error_msgs = {
 ///error codes [[[]]]
 
 export const INVALID_LOGIN = '04557';
+export const EXPIRED_QR_CODE = 'P__ee04557';
+export const INVALID_QR_CODE = 'P__ee05557';
