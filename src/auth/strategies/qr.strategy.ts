@@ -4,16 +4,15 @@ import { PassportStrategy } from '@nestjs/passport';
 import { ExtractJwt, Strategy } from 'passport-jwt';
 
 @Injectable()
-export class AdminAtStrategy extends PassportStrategy(Strategy, 'admin-jwt') {
+export class QrCodeStrategy extends PassportStrategy(Strategy, 'qr-jwt') {
   constructor(config: ConfigService) {
     super({
-      jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
-      secretOrKey: config.get<string>('ADMIN_JWT_SECRET'),
+      jwtFromRequest: ExtractJwt.fromBodyField('qrCode'),
+      secretOrKey: config.get<string>('QR_SECRET'),
     });
   }
 
   validate(payload) {
-    // TODO: get the user permissions here
     return payload;
   }
 }

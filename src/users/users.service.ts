@@ -1,3 +1,5 @@
+import { NATIONALID_HASH_LIFETIME } from './../constants/common';
+import { JwtService } from '@nestjs/jwt';
 import { PrismaService } from '../database/prisma.service';
 import {
   BadRequestException,
@@ -5,16 +7,19 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import * as argon from 'argon2';
-import { PUBLIC_FIELDS } from 'src/constants';
+import { PUBLIC_FIELDS, QR_LIFETIME } from 'src/constants';
 import { Prisma } from '@prisma/client';
 import { Gender, UserProfile, User } from 'src/graphql';
 import { CreateUserInput } from 'src/graphql/createUserInput.schema';
 import { CloudinaryService } from 'src/cloudinary/cloudinary.service';
+import { ConfigService } from '@nestjs/config';
 @Injectable()
 export class UsersService {
   constructor(
     private readonly db: PrismaService,
     private readonly cloudinaryService: CloudinaryService,
+    private config: ConfigService,
+    private jwt: JwtService,
   ) {}
 
   async findById(userId: string, select: Prisma.UserSelect = null) {
@@ -126,5 +131,29 @@ export class UsersService {
       where: { id: userId },
     });
     return image_url;
+  }
+
+  async generateHashedQrCode(user: User) {
+    const nationalIdHash = await this.jwt.signAsync(
+      {
+        natioanlId: user.nationalId,
+      },
+      {
+        secret: this.config.get('NATIONALID_HASH_SECRET'),
+        expiresIn: NATIONALID_HASH_LIFETIME,
+      },
+    );
+
+    const token = await this.jwt.signAsync(
+      {
+        natioanlIdHash: nationalIdHash,
+      },
+      {
+        secret: this.config.get('QR_SECRET'),
+        expiresIn: QR_LIFETIME,
+      },
+    );
+
+    return { qrCode: token };
   }
 }
