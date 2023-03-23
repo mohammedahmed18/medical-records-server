@@ -1,4 +1,3 @@
-import { NATIONALID_HASH_LIFETIME } from './../constants/common';
 import { JwtService } from '@nestjs/jwt';
 import { PrismaService } from '../database/prisma.service';
 import {
@@ -13,6 +12,8 @@ import { Gender, UserProfile, User } from 'src/graphql';
 import { CreateUserInput } from 'src/graphql/createUserInput.schema';
 import { CloudinaryService } from 'src/cloudinary/cloudinary.service';
 import { ConfigService } from '@nestjs/config';
+import crypto from 'crypto'
+
 @Injectable()
 export class UsersService {
   constructor(
@@ -116,7 +117,7 @@ export class UsersService {
       // delete the prev image from cloudinary
       // we don't want to use await here to not block the code
       this.cloudinaryService.deleteImage(user.image_src);
-    }
+    } 
     const image_url: string = await this.cloudinaryService
       .uploadImage(file)
       .catch((err) => {
@@ -134,19 +135,9 @@ export class UsersService {
   }
 
   async generateHashedQrCode(user: User) {
-    const nationalIdHash = await this.jwt.signAsync(
-      {
-        natioanlId: user.nationalId,
-      },
-      {
-        secret: this.config.get('NATIONALID_HASH_SECRET'),
-        expiresIn: NATIONALID_HASH_LIFETIME,
-      },
-    );
-
     const token = await this.jwt.signAsync(
       {
-        natioanlIdHash: nationalIdHash,
+        nationalId: user.nationalId,
       },
       {
         secret: this.config.get('QR_SECRET'),
