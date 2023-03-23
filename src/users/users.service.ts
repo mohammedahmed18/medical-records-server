@@ -12,8 +12,6 @@ import { Gender, UserProfile, User } from 'src/graphql';
 import { CreateUserInput } from 'src/graphql/createUserInput.schema';
 import { CloudinaryService } from 'src/cloudinary/cloudinary.service';
 import { ConfigService } from '@nestjs/config';
-import crypto from 'crypto'
-
 @Injectable()
 export class UsersService {
   constructor(
