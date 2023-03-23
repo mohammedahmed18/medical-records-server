@@ -7,7 +7,18 @@ import { ExtractJwt, Strategy } from 'passport-jwt';
 export class AdminAtStrategy extends PassportStrategy(Strategy, 'admin-jwt') {
   constructor(config: ConfigService) {
     super({
-      jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
+      jwtFromRequest: ExtractJwt.fromExtractors([
+        ExtractJwt.fromAuthHeaderAsBearerToken(),
+        ExtractJwt.fromExtractors([
+          (req) => {
+            let token = null;
+            if (req && req.cookies) {
+              token = req.cookies['aToken']; //admin token
+            }
+            return token;
+          },
+        ]),
+      ]),
       secretOrKey: config.get<string>('ADMIN_JWT_SECRET'),
     });
   }

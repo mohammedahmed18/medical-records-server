@@ -11,6 +11,7 @@ export type JwtPayload = {
   iat: number;
   exp: number;
   refreshToken?: string;
+  medicalSpecialization: string | null;
 };
 
 export type AdminPayload = {
@@ -20,7 +21,7 @@ export type AdminPayload = {
 };
 
 export type CustomErrorOptions = {
-  msg: string;
+  message: string;
   statusCode?: HttpStatus;
   errorCode?: string;
 };

@@ -1,6 +1,6 @@
 import { MedicalSpecialization } from 'src/graphql';
 import { Field, Float, ObjectType } from '@nestjs/graphql';
-import { Decimal } from '@prisma/client/runtime';
+import { Decimal } from '@prisma/client/runtime/library';
 import { Gender } from './enums.schema';
 
 @ObjectType()

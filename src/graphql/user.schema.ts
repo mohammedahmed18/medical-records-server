@@ -1,5 +1,5 @@
 import { Field, Float, Int, ObjectType } from '@nestjs/graphql';
-import { Decimal } from '@prisma/client/runtime';
+import { Decimal } from '@prisma/client/runtime/library';
 import { Gender, MedicalSpecialization } from './enums.schema';
 import { UserProfile } from './userProfile.schema';
 

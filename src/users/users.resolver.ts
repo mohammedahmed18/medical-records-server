@@ -16,7 +16,7 @@ export class UserResolver {
   }
 
   @Query(() => UserProfile)
-  async me(@getCurrentUser({ field: 'id' }) userId: string) {
+  async me(@getCurrentUser('id') userId: string) {
     return await this.userService.loggedInUserProfile(userId);
   }
 

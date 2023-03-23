@@ -7,3 +7,7 @@ export const error_msgs = {
 
   ADMIN_WRONG_CREDENTIALS: 'Invalid username or password',
 };
+
+///error codes [[[]]]
+
+export const INVALID_LOGIN = '04557';

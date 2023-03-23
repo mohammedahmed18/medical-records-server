@@ -1,3 +1,4 @@
+import { DoctorsModule } from './doctors/doctors.module';
 import { GraphQlUtils } from './utils/graphqlUtils';
 import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
@@ -20,6 +21,7 @@ import { RedisConfigModule } from './redis/redis.module';
     RedisConfigModule,
     AuthModule,
     UsersModule,
+    DoctorsModule,
     MedicalRecordsModule,
     ConfigModule.forRoot({ isGlobal: true }),
     GraphQLModule.forRoot<ApolloDriverConfig>({

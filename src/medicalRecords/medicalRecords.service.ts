@@ -10,12 +10,13 @@ export class MedicalRecordsService {
   async getUserMedicalRecords(userId: string, options: getMedicalRecordsArgs) {
     const whereCriteria = { userId };
     if (options.actionType) whereCriteria['actionType'] = options.actionType;
+    // TODO: options.doctor
     const records = await this.prisma.medical_Record.findMany({
       where: whereCriteria,
-      take: options.take,
-      skip: options.skip,
+      take: options.take ? parseInt(options.take) : undefined,
+      skip: options.skip ? parseInt(options.skip) : undefined,
       include: {
-        doctor: options.doctor ? { select: DOCTOR_SELECT_FIELDS } : false,
+        doctor: { select: DOCTOR_SELECT_FIELDS },
       },
       orderBy: { createdAt: 'desc' },
     });

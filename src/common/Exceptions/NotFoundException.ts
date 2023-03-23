@@ -9,7 +9,7 @@ export class NotFoundExceptionFilter implements ExceptionFilter {
     const response = ctx.getResponse();
     return response.json(
       new CustomError({
-        msg: 'not found',
+        message: 'not found',
         statusCode: 404,
       }),
     );
