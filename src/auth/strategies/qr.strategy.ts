@@ -1,18 +1,18 @@
 import { Injectable } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
 import { PassportStrategy } from '@nestjs/passport';
 import { ExtractJwt, Strategy } from 'passport-jwt';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class QrCodeStrategy extends PassportStrategy(Strategy, 'qr-jwt') {
-  constructor(config: ConfigService) {
+  constructor(readonly configService: ConfigService) {
     super({
       jwtFromRequest: ExtractJwt.fromBodyField('qrCode'),
-      secretOrKey: config.get<string>('QR_SECRET'),
+      secretOrKey: configService.get<string>('QR_SECRET'),
     });
   }
 
-  validate(payload) {
-    return payload;
+  async validate(payload) {
+    return payload
   }
 }

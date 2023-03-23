@@ -14,7 +14,6 @@ export const createMedicalRecordScheam = Joi.object({
   title: Joi.string().required().label('Medical record title'),
   userId: Joi.string().required().label('User id'),
   details: MedicalRecordDetailsValidationSchema,
-  doctorId: Joi.string().label('Doctor id'),
   lifetime: Joi.boolean().default(false),
   actionType: Joi.string()
     .valid(...Object.keys(MedicalRecordsActionTypes))

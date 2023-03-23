@@ -12,6 +12,9 @@ import { Gender, UserProfile, User } from 'src/graphql';
 import { CreateUserInput } from 'src/graphql/createUserInput.schema';
 import { CloudinaryService } from 'src/cloudinary/cloudinary.service';
 import { ConfigService } from '@nestjs/config';
+import { resizeCloudinaryImage } from 'src/utils/resizeCloudinaryImage';
+
+
 @Injectable()
 export class UsersService {
   constructor(
@@ -91,7 +94,7 @@ export class UsersService {
     userProfile.employmentStatus = user.employmentStatus.label;
     userProfile.maritalStatus = user.maritalStatus.label;
     userProfile.educationalLevel = user.educationalLevel.label;
-
+    userProfile.image_src = resizeCloudinaryImage(user.image_src , {square : true , size : 800} )
     return userProfile;
   }
 
