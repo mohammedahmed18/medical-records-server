@@ -15,6 +15,7 @@ import { USERS_BASE_URL } from 'src/constants';
 import { CacheService } from 'src/redis/cache.service';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { FileUploadValidationPipe } from './pipes';
+import { User } from 'src/graphql';
 
 @Controller(USERS_BASE_URL)
 export class UsersController {
@@ -53,5 +54,10 @@ export class UsersController {
     @Body('userId') userId,
   ) {
     return await this.usersService.uploadUserProfileImage(userId, file);
+  }
+  @Post('qr-generate')
+  @HttpCode(HttpStatus.OK)
+  async generateQrCode(@getCurrentUser() user: User) {
+    return await this.usersService.generateHashedQrCode(user);
   }
 }
