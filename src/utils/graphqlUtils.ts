@@ -38,7 +38,7 @@ export class GraphQlUtils {
     });
   };
   static isGraphQl(context: ExecutionContext): boolean {
-    return GqlExecutionContext.create(context).getType() === 'graphql';
+    return GqlExecutionContext.create(context)?.getType() === 'graphql';
   }
   static getGraphQlContextParams(context: ExecutionContext) {
     const ctx = GqlExecutionContext.create(context);

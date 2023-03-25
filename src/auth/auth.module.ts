@@ -1,3 +1,4 @@
+import { QrCodeStrategy } from './strategies/qr.strategy';
 import { UsersModule } from './../users/users.module';
 import { Module } from '@nestjs/common';
 import { AuthService } from './auth.service';
@@ -7,7 +8,13 @@ import { JwtModule } from '@nestjs/jwt';
 import { DatabaseModule } from 'src/database/database.module';
 @Module({
   imports: [UsersModule, DatabaseModule, JwtModule.register({})],
-  providers: [AuthService, AtStrategy, RtStrategy, AdminAtStrategy],
+  providers: [
+    AuthService,
+    AtStrategy,
+    RtStrategy,
+    AdminAtStrategy,
+    QrCodeStrategy,
+  ],
   controllers: [AuthController],
 })
 export class AuthModule {}
