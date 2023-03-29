@@ -1,4 +1,3 @@
-import { PrismaClientKnownRequestError } from '@prisma/client/runtime';
 import {
   CallHandler,
   ExecutionContext,
@@ -16,10 +15,7 @@ export class ErrorInterceptor implements NestInterceptor {
     return next.handle().pipe(
       catchError((err) => {
         // prisma unique error
-        if (
-          err instanceof PrismaClientKnownRequestError &&
-          err.code === prismaErrors.INSERT_UNIQUE
-        )
+        if ( err.code && err.code === prismaErrors.INSERT_UNIQUE )
           throw new CustomError({
             message: error_msgs.RESOURCE_ALREADY_EXISTS(err.meta?.target[0]),
             statusCode: 400,
@@ -46,9 +42,9 @@ export class ErrorInterceptor implements NestInterceptor {
           // TODO: for now we will show the error for the sake of development but later we shouldn't show sensitive information about the server for users
           Logger.error('::: ' + err.message);
           // return throwError(() => new CustomError({message : "internal server error",statusCode : 500}) )
-          return throwError(
-            () => new CustomError({ message: err.message, statusCode: 500 }),
-          );
+          // return throwError(
+          //   () => new CustomError({ message: err.message, statusCode: 500 }),
+          // );
         }
       }),
     );

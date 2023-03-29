@@ -5,11 +5,13 @@ import { DoctorService } from './doctor.service';
 import { getQrNationalId, ValidateQrCode } from './decorators';
 import { UseValidation } from 'src/common/decorators';
 import { ScanQrCodeSchema } from './validation/scanQrCode.schema';
+import { MedicalRecordsService } from 'src/medicalRecords/medicalRecords.service';
 
 @Controller(DOCTORS_BASE_URL)
 @Doctor()
 export class DoctorsController {
-  constructor(private readonly doctorService : DoctorService){}
+  constructor(private readonly doctorService : DoctorService,
+    private readonly medicalRecordsService : MedicalRecordsService){}
 
   
   @Post("scan-qrCode")
@@ -19,4 +21,9 @@ export class DoctorsController {
   async scanQrCode(@Body() data ,@getQrNationalId() nationalId ) {
     return this.doctorService.scanQrCode(nationalId);
   }
+
+  // @Post("create-medical-record")
+  // async createMedicalRecord(){
+  //   return this.medicalRecordsService.
+  // }
 }

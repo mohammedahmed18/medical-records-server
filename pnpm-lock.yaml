@@ -29,6 +29,7 @@ specifiers:
   cache-manager-redis-store: ^2.0.0
   cloudinary: ^1.35.0
   cookie-parser: ^1.4.6
+  crypto: ^1.0.1
   eslint: ^8.0.1
   eslint-config-prettier: ^8.3.0
   eslint-plugin-prettier: ^4.0.0
@@ -70,6 +71,7 @@ dependencies:
   cache-manager-redis-store: 2.0.0
   cloudinary: 1.35.0
   cookie-parser: 1.4.6
+  crypto: 1.0.1
   graphql: 16.6.0
   helmet: 6.0.1
   joi: 17.7.0
@@ -3093,6 +3095,11 @@ packages:
       shebang-command: 2.0.0
       which: 2.0.2
     dev: true
+
+  /crypto/1.0.1:
+    resolution: {integrity: sha512-VxBKmeNcqQdiUQUW2Tzq0t377b54N2bMtXO/qiLa+6eRRmmC4qT3D4OnTGoT/U6O9aklQ/jTwbOtRMTTY8G0Ig==}
+    deprecated: This package is no longer supported. It's now a built-in Node module. If you've depended on crypto, you should switch to the one that's built-in.
+    dev: false
 
   /cssfilter/0.0.10:
     resolution: {integrity: sha512-FAaLDaplstoRsDR8XGYH51znUN0UY7nMc6Z9/fvE8EXGwvJE9hu7W2vHwx1+bd6gCYnln9nLbzxFTrcO9YQDZw==}

@@ -1,4 +1,3 @@
-import { CLIENT_URL } from './../constants/common';
 import { UserLoginDto } from './dto/user-login.dto';
 import {
   Body,
@@ -28,14 +27,12 @@ export class AuthController {
   @HttpCode(HttpStatus.OK)
   async login(@Body() body: UserLoginDto, @Response() res: ExpressResponse) {
     const tokens = await this.authService.login(body);
-    res.header('Access-Control-Allow-Origin', CLIENT_URL);
     res
       .cookie(this.TOKEN_COOKIE, tokens.accessToken, {
         httpOnly: true,
         sameSite: isProd ? 'none' : 'lax',
         expires: new Date(Date.now() + TOKEN_LIFETIME * 1000),
         secure: isProd,
-        // domain: CLIENT_URL.replace('https://', '').replace('http://', ''),
       })
       .json(tokens)
       .end();
