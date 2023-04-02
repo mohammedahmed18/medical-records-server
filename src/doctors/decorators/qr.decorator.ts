@@ -1,4 +1,4 @@
-import { applyDecorators, ExecutionContext, Logger, UnauthorizedException, UseGuards } from '@nestjs/common';
+import { applyDecorators, ExecutionContext, UnauthorizedException, UseGuards } from '@nestjs/common';
 
 import { AuthGuard } from '@nestjs/passport';
 import { Observable } from 'rxjs';
@@ -11,8 +11,6 @@ export class QrGuard extends AuthGuard('qr-jwt') {
   }
 
   handleRequest(err, user, info: Error) {
-    Logger.debug(info.name)
-
     if (info?.name === "TokenExpiredError") {
         // Handle the expired token error
         throw new CustomError({
