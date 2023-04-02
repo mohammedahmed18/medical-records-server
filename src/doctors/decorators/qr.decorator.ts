@@ -10,7 +10,7 @@ export class QrGuard extends AuthGuard('qr-jwt') {
     return super.canActivate(context);
   }
 
-  handleRequest(err: any, user: any, info: Error): any {
+  handleRequest(err, user, info: Error) {
     Logger.debug(info.name)
 
     if (info?.name === "TokenExpiredError") {
