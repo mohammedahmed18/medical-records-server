@@ -1,19 +1,15 @@
-import { Field, InputType, Int } from '@nestjs/graphql';
+import { Field, InputType } from '@nestjs/graphql';
 
 @InputType()
-export class MedicalRecordDetails {
-  @Field(() => [MedicineType], { nullable: true })
-  medicines?: MedicineType[];
-}
-
-// @InputType()
-class BaseDetailType {}
-
-@InputType()
-class MedicineType extends BaseDetailType {
+export class MedicalRecordDetail {
   @Field()
-  name: string;
+  key: string;
 
-  @Field(() => Int)
-  dosesNumber: number;
+  @Field()
+  type: string;
+
+
+  @Field()
+  value: string; // value should be always string ,even if it's an array it should be stringified
+
 }

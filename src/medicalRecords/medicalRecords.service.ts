@@ -1,7 +1,9 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/database/prisma.service';
 import { DOCTOR_SELECT_FIELDS } from './constants';
 import { getMedicalRecordsArgs } from './types';
+import { CreateUserMedicalRecordInput } from 'src/graphql';
+import isProd from 'src/utils/isProd';
 
 @Injectable()
 export class MedicalRecordsService {
@@ -23,7 +25,16 @@ export class MedicalRecordsService {
     return records;
   }
 
-  // async createUserMedicalRecord(){
-
-  // }
+  async createUserMedicalRecord(doctorId : string , inputData : CreateUserMedicalRecordInput){
+    if(inputData.userId === doctorId && isProd) throw new BadRequestException("you can't create medical record for yourself")
+    const medicalRecord = this.prisma.medical_Record.create({
+      data : {
+        doctorId,
+        ...inputData,
+        details : inputData.details
+      },
+    });
+  
+    return medicalRecord
+  }
 }
