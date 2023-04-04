@@ -19,8 +19,8 @@ export class DoctorsController {
   @ValidateQrCode()
   @UseValidation(ScanQrCodeSchema)
   @HttpCode(HttpStatus.OK)
-  async scanQrCode(@Body() data ,@getQrNationalId() nationalId ) {
-    return this.doctorService.scanQrCode(nationalId);
+  async scanQrCode(@Body() data ,@getQrNationalId() patientNationalId , @getCurrentUser("nationalId") doctorNationalId ) {
+    return this.doctorService.scanQrCode(patientNationalId , doctorNationalId);
   }
 
   @Post("create-medical-record")
