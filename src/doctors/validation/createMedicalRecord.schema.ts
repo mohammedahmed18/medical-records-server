@@ -9,7 +9,6 @@ export const createMedicalRecordSchema = Joi.object({
         key: Joi.string().required(),
         type: Joi.string().required().valid(...['date' , 'text' , 'list' , 'email' , 'url' , 'phone']),
         value: Joi.string().required()
-    })).required(),
-    actionType: Joi.string().default(MedicalRecordsActionTypes.Generic).valid(...Object.keys(MedicalRecordsActionTypes))
-    .label('Medical record type'),
+    })),
+    actionType: Joi.string().required().valid(...Object.keys(MedicalRecordsActionTypes)).label('Medical record type')
 });

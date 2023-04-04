@@ -15,12 +15,25 @@ export class ErrorInterceptor implements NestInterceptor {
     return next.handle().pipe(
       catchError((err) => {
         // prisma unique error
-        if ( err.code && err.code === prismaErrors.INSERT_UNIQUE )
+        if (err.code && err.code === prismaErrors.INSERT_UNIQUE)
           throw new CustomError({
             message: error_msgs.RESOURCE_ALREADY_EXISTS(err.meta?.target[0]),
             statusCode: 400,
             errorCode: prismaErrors.INSERT_UNIQUE,
           });
+
+        // prisma forigen key error
+        if (err?.code === prismaErrors.FOREIGN_KEY_CONSTRAINT) {
+          const field = err.meta.field_name
+            .split('_')[1]
+            .toLowerCase()
+            .split('id')[0];
+          throw new CustomError({
+            message: `this ${field} not found`,
+            statusCode: 404,
+            errorCode: prismaErrors.FOREIGN_KEY_CONSTRAINT,
+          });
+        }
 
         // Check if a custom error is provided
         if (err?.response) {

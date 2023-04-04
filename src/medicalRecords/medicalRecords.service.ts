@@ -31,7 +31,7 @@ export class MedicalRecordsService {
       data : {
         doctorId,
         ...inputData,
-        details : inputData.details
+        details : inputData.details || []
       },
     });
   

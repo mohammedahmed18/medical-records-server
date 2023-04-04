@@ -7,11 +7,6 @@ export class DoctorGuard implements CanActivate {
   constructor(private reflector: Reflector) {}
 
   canActivate(context: ExecutionContext) {
-    const requireDoctor = this.reflector.getAllAndOverride<boolean>(
-      'requireDoctor',
-      [context.getHandler(), context.getClass()],
-    );
-    if (!requireDoctor) return true;
 
     const request = ContextUtils.getRequest(context);
     const user = request.user;
