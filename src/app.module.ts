@@ -30,6 +30,7 @@ import { RedisConfigModule } from './redis/redis.module';
       playground: true,
       autoSchemaFile: join(process.cwd(), 'src/schema.gql'),
       introspection: true,
+      persistedQueries: false
     }),
     AdminModule,
   ],
