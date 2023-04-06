@@ -12,10 +12,12 @@ to setup the local development:
 
 
 1- cd into the project folder
+
 2- install the dependencies 
     ```
     pnpm i
     ``` 
+
 3- start the development server 
 ```
 ./start-server.sh

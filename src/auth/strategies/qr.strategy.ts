@@ -13,6 +13,7 @@ export class QrCodeStrategy extends PassportStrategy(Strategy, 'qr-jwt') {
   }
 
   async validate(payload) {
-    return payload
+    const { user, ...rest } = payload;
+    return { patient: user, ...rest };
   }
 }
