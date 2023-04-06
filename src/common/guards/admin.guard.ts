@@ -7,7 +7,9 @@ import { GraphQlUtils } from 'src/utils/graphqlUtils';
 @Injectable()
 export class AdminGuard extends AuthGuard('admin-jwt') {
   constructor(private reflector: Reflector) {
-    super();
+    super({
+      property : "admin"
+    });
   }
 
   canActivate(context: ExecutionContext) {

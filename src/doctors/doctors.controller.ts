@@ -17,7 +17,8 @@ export class DoctorsController {
   @UseValidation(ScanQrCodeSchema)
   @HttpCode(HttpStatus.OK)
   async scanQrCode(@Body() data ,@getQrNationalId() patientNationalId , @getCurrentUser("nationalId") doctorNationalId ) {
-    return this.doctorService.scanQrCode(patientNationalId , doctorNationalId);
+    return {patientNationalId , doctorNationalId}
+    // return this.doctorService.scanQrCode(patientNationalId , doctorNationalId);
   }
 
 }

@@ -5,9 +5,8 @@ export const getQrNationalId = createParamDecorator(
   (_ , ctx : ExecutionContext) => {
     
     const request = ContextUtils.getRequest(ctx);
-    const {nationalId} = request.patient; 
 
-    return nationalId
+    return request.patient.nationalId
     
   },
 );

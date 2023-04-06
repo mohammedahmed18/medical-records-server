@@ -6,6 +6,11 @@ import { CustomError } from 'src/common/errors';
 import { EXPIRED_QR_CODE, INVALID_QR_CODE } from 'src/constants';
 
 export class QrGuard extends AuthGuard('qr-jwt') {
+  constructor(){
+    super({
+      property: "patient"
+    })
+  }
   canActivate(context: ExecutionContext): boolean | Promise<boolean> | Observable<boolean> {
     return super.canActivate(context);
   }
