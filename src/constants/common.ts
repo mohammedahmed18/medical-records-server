@@ -10,3 +10,4 @@ export const CLIENT_URL = isProd
   ? 'https://medical-records-web.vercel.app'
   : 'http://localhost:3001';
 export const NETLIFY_URL = "https://medical-records1.netlify.app/"
+export const SERVER_URL = isProd ? "https://medical-records-server1.onrender.com" : "http://localhost:3000"
