@@ -1,5 +1,4 @@
-import { Injectable, Logger } from '@nestjs/common';
-import { MessageBody, SubscribeMessage } from '@nestjs/websockets';
+import { Injectable } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
 import { PrismaService } from 'src/database/prisma.service';
 import { CreateMessageInputType } from 'src/graphql';
@@ -110,11 +109,5 @@ export class ChatService {
     return message;
   }
 
-
-  @SubscribeMessage('messages')
-  handleEvent(@MessageBody() data: string): string {
-    Logger.debug("message ")
-    return data;
-  }
   
 }

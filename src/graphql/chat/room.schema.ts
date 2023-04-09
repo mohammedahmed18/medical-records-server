@@ -27,7 +27,7 @@ export class RoomType {
     @Field(() => RoomUserType)
     otherUser : RoomUserType
 
-    @Field()
+    @Field() //test
     lastMessageTimestamp : string
 
 }
