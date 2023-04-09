@@ -1,9 +1,8 @@
-FROM node:19.0-alpine As development
+FROM node:19.0-alpine
 
 WORKDIR /app
 
 COPY package.json ./
-COPY pnpm-lock.yaml ./
 
 RUN npm i -g pnpm
 
@@ -20,8 +19,8 @@ RUN npx prisma db push
 # RUN npx prisma studio
 
 
-RUN npm run build
+RUN pnpm run build
 
 EXPOSE 4000
 
-CMD ["npm", "run", "start:prod"]
+CMD ["pnpm", "run", "start:prod"]
