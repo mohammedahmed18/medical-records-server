@@ -1,12 +1,10 @@
-FROM node:19.0-alpine
+FROM node:19.0-alpine As development
 
 WORKDIR /app
 
-COPY package.json ./
+COPY package*.json ./
 
-RUN npm i -g pnpm
-
-RUN pnpm i
+RUN npm install
 
 COPY . .
 
@@ -19,8 +17,8 @@ RUN npx prisma db push
 # RUN npx prisma studio
 
 
-RUN pnpm run build
+RUN npm run build
 
 EXPOSE 4000
 
-CMD ["pnpm", "run", "start:prod"]
+CMD ["npm", "run", "start:prod"]
