@@ -2,9 +2,12 @@ FROM node:19.0-alpine As development
 
 WORKDIR /app
 
-COPY package*.json ./
+COPY package.json ./
+COPY pnpm-lock.yaml ./
 
-RUN npm install
+RUN npm i -g pnpm
+
+RUN pnpm i
 
 COPY . .
 

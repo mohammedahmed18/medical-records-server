@@ -25,6 +25,7 @@ export class ChatResolver{
         return this.chatService.sendMessage(currentUserId, createMessageInput, this.pubSub);
     }
 
+    // later wa can have a message queue instead like rabbitMQ
     @Subscription(() => MessageType,{
         name : MESSAGE_SENT,
         filter: (message : MessageType & {to : string}, _ , context) => {
