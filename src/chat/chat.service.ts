@@ -1,16 +1,19 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { PubSub } from 'graphql-subscriptions';
+import { Injectable } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
 import { PrismaService } from 'src/database/prisma.service';
 import { CreateMessageInputType } from 'src/graphql';
 import { UsersService } from 'src/users/users.service';
 import { resizeCloudinaryImage } from 'src/utils/resizeCloudinaryImage';
+import { MESSAGE_SENT } from 'src/constants';
 
 @Injectable()
 export class ChatService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly userService: UsersService,
-  ) {}
+  ) {
+  }
 
 
   private async getUserRooms(userId){
@@ -74,7 +77,7 @@ export class ChatService {
     });
   }
 
-  async sendMessage(currentUserId: string , createMessageInput : CreateMessageInputType) {
+  async sendMessage(currentUserId: string , createMessageInput : CreateMessageInputType, pubSub: PubSub) {
 
     const {toId , type ,value} = createMessageInput
     let room = await this.prisma.room.findFirst({
@@ -103,10 +106,12 @@ export class ChatService {
         value: true,
       },
     });
+    // this will help us filter the subscriptions based on the reciever id
+    message['to'] = toId
 
     this.upadeRoomLastMessage(room.id, message.id);
-    
 
+    pubSub.publish(MESSAGE_SENT , message)
     return message;
   } 
 }
