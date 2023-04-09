@@ -40,3 +40,4 @@ medical_records_api_docs
 redis.conf/
 redis-data/
 dbscripts/
+pnpm-lock.yaml
