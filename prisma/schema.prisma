@@ -93,94 +93,136 @@ model Employment_Status {
 
 // citizen / doctor
 model User {
-  id                    String   @id @default(uuid())
-  nationalId            String   @unique
-  name                  String
-  email                 String?  @unique
-  password              String
-  createdAt             DateTime @default(now())
-  updatedAt             DateTime @updatedAt
-  hashedRt              String?
-  gender                Gender
-  dob                   DateTime @db.Date //only the date not the time
-  avg_monthly_income    Float?
-  weight                String?
-  height_cm             Decimal?
-  image_src             String?
-  
-  maritalStatus         Marital_Status @relation(fields: [maritalStatusId], references: [id])
-  maritalStatusId       Int
-  
-  educationalLevel      Educational_Level @relation(fields: [educationalLevelId], references: [id])
-  educationalLevelId    Int
-  
-  employmentStatus      Employment_Status @relation(fields: [employmentStatusId], references: [id])
-  employmentStatusId    Int
+  id                 String   @id @default(uuid())
+  nationalId         String   @unique
+  name               String
+  email              String?  @unique
+  password           String
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+  hashedRt           String?
+  gender             Gender
+  dob                DateTime @db.Date //only the date not the time
+  avg_monthly_income Float?
+  weight             String?
+  height_cm          Decimal?
+  image_src          String?
+
+  maritalStatus   Marital_Status @relation(fields: [maritalStatusId], references: [id])
+  maritalStatusId Int
+
+  educationalLevel   Educational_Level @relation(fields: [educationalLevelId], references: [id])
+  educationalLevelId Int
+
+  employmentStatus   Employment_Status @relation(fields: [employmentStatusId], references: [id])
+  employmentStatusId Int
 
   medicalSpecialization MedicalSpecialization? //will be null if it's a citizen not a doctor
 
-  admin                 Admin? // it's nullable because not every user is an admin of course
-  medicalRecords        Medical_Record[] @relation("user_medical_records_FK")
+  admin                Admin? // it's nullable because not every user is an admin of course
+  medicalRecords       Medical_Record[] @relation("user_medical_records_FK")
   // FIXME: writtenMedicalRecors is not descriptive
-  writtenMedicalRecors  Medical_Record[] @relation("doctor_medical_records_FK") // this will return array of all the records that the doctor wrote , 
+  writtenMedicalRecors Medical_Record[] @relation("doctor_medical_records_FK") // this will return array of all the records that the doctor wrote , 
+  messages             Message[]
 
   @@map("users")
 }
 
 model Admin {
-  id              String @id @default(uuid())
+  id String @id @default(uuid())
 
-  user            User   @relation(fields: [userId], references: [id])
-  userId          String @unique
-  
-  username        String
-  password        String
-  
-  role            Role   @relation(fields: [roleId], references: [id])
-  roleId          String
+  user   User   @relation(fields: [userId], references: [id])
+  userId String @unique
+
+  username String
+  password String
+
+  role   Role   @relation(fields: [roleId], references: [id])
+  roleId String
 
   @@map("admins")
 }
 
 model Role {
-  id              String       @id @default(uuid())
-  name            String
-  description     String?
-  permissions     Permission[]
-  admins          Admin[] // array of admins having this role
-  createdAt       DateTime     @default(now())
-  updatedAt       DateTime     @updatedAt
+  id          String       @id @default(uuid())
+  name        String
+  description String?
+  permissions Permission[]
+  admins      Admin[] // array of admins having this role
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
 
   @@map("roles")
 }
 
 model Permission {
-  id              String  @id @default(uuid())
-  value           String
-  description     String?
-  role            Role    @relation(fields: [roleId], references: [id])
-  roleId          String
+  id          String  @id @default(uuid())
+  value       String
+  description String?
+  role        Role    @relation(fields: [roleId], references: [id])
+  roleId      String
 
   @@map("permissions")
 }
 
 model Medical_Record {
-  id              String                    @id @default(uuid())
-  user            User                      @relation(fields: [userId], references: [id], name: "user_medical_records_FK")
-  userId          String                    
-  title           String
-  details         Json?                     @default("[]")
-  doctor          User?                      @relation(fields: [doctorId], references: [id], name: "doctor_medical_records_FK")
-  doctorId        String?
-  createdAt       DateTime                  @default(now())
-  updatedAt       DateTime                  @updatedAt
-  lifetime        Boolean                   @default(false)
-  actionType      MedicalRecordsActionTypes @default(Generic)
+  id         String                    @id @default(uuid())
+  user       User                      @relation(fields: [userId], references: [id], name: "user_medical_records_FK")
+  userId     String
+  title      String
+  details    Json?                     @default("[]")
+  doctor     User?                     @relation(fields: [doctorId], references: [id], name: "doctor_medical_records_FK")
+  doctorId   String?
+  createdAt  DateTime                  @default(now())
+  updatedAt  DateTime                  @updatedAt
+  lifetime   Boolean                   @default(false)
+  actionType MedicalRecordsActionTypes @default(Generic)
 
   @@map("medicalRecords")
 }
+
+// chat
+enum MessageType {
+  text
+  image
+  medicalRecord
+}
+
+model Message {
+  id String @id @default(uuid())
+
+  room   Room   @relation(fields: [roomId], references: [id], name: "mesage_room_fk")
+  roomId String
+
+  type  MessageType @default(text)
+  value String
+
+  sender             User   @relation(fields: [senderId], references: [id])
+  senderId           String
+  
+  // won't be used anyway
+  last_message_rooms Room[] @relation("last_mesage_room_fk")
+
+  @@map("messages")
+}
+
+model Room {
+  id            String    @id @unique @default(uuid())
+
+  lastMessage   Message?   @relation(fields: [lastMessageId], references: [id], name: "last_mesage_room_fk")
+  lastMessageId String?
+  
+  lastMessageTimestamp    DateTime   @default(now())
+  users         Json      @default("[]")
+
+  messages      Message[] @relation("mesage_room_fk")
+
+  @@map("rooms")
+}
+
 // model : medical records
 // attachmentId : //TODO: 
 
 // TODO:
 // model : Attachments
+

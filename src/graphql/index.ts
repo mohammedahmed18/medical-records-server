@@ -4,3 +4,6 @@ export * from './enums.schema';
 export * from './createUserInput.schema';
 export * from './medicalRecordDetails.schema';
 export * from './createUserMedicalRecordInput.schema';
+export * from './chat/message.schema';
+export * from './chat/room.schema';
+export * from './chat/CreateMessageInputType.schema';

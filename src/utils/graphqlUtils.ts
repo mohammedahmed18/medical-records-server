@@ -4,6 +4,7 @@ import {
   Gender,
   MedicalRecordsActionTypes,
   MedicalSpecialization,
+  MessageKinds,
 } from 'src/graphql';
 
 type regiteredEnum<T> = {
@@ -28,6 +29,11 @@ export class GraphQlUtils {
       name: 'MedicalRecordsActionTypes',
       description: null,
     },
+    {
+      enum : MessageKinds,
+      name : "MessageKinds",
+      description : "kinds of each message"
+    }
   ];
 
   static registerEnumTypes = () => {

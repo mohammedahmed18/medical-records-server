@@ -14,6 +14,7 @@ import { AtGuard } from './common/guards';
 import { MedicalRecordsModule } from './medicalRecords/medicalRecords.module';
 import { AdminModule } from './admin/admin.module';
 import { RedisConfigModule } from './redis/redis.module';
+import { ChatModule } from './chat/chat.module';
 
 @Module({
   imports: [
@@ -32,6 +33,7 @@ import { RedisConfigModule } from './redis/redis.module';
       introspection: true,
       persistedQueries: false
     }),
+    ChatModule,
     AdminModule,
   ],
   controllers: [AppController],

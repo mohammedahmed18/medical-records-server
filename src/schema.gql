@@ -77,6 +77,34 @@ enum MedicalSpecialization {
   Urologic
 }
 
+type MessageType {
+  id: String!
+  senderId: String!
+  roomId: String!
+  type: MessageKinds!
+  value: String!
+}
+
+"""kinds of each message"""
+enum MessageKinds {
+  text
+  image
+  medicalRecord
+}
+
+type RoomUserType {
+  id: String!
+  name: String!
+  image_src: String
+}
+
+type RoomType {
+  id: String!
+  lastMessage: MessageType!
+  otherUser: RoomUserType!
+  lastMessageTimestamp: String!
+}
+
 type LoginResponseType {
   accessToken: String!
 }
@@ -84,10 +112,12 @@ type LoginResponseType {
 type Query {
   users: [UserProfile!]!
   me: UserProfile!
+  getMyRooms: [RoomType!]!
 }
 
 type Mutation {
   createUser(data: CreateUserInput!): String!
+  sendMessage(data: CreateMessageInputType!): MessageType!
   adminLogin(credentials: LoginInputType!): LoginResponseType!
 }
 
@@ -104,6 +134,12 @@ input CreateUserInput {
   maritalStatusId: Int!
   educationalLevelId: Int!
   employmentStatusId: Int!
+}
+
+input CreateMessageInputType {
+  type: MessageKinds
+  value: String!
+  toId: String!
 }
 
 input LoginInputType {

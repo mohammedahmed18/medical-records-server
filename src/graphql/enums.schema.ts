@@ -57,3 +57,10 @@ export enum MedicalRecordsActionTypes {
   Allergy = 'Allergy',
   LabTest = 'LabTest',
 }
+
+
+export enum MessageKinds{
+  text = "text",
+  image = "image",
+  medicalRecord = "medicalRecord"
+}
