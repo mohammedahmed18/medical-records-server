@@ -33,6 +33,7 @@ export class ChatService {
     const roomsWithOtherUsers = await Promise.all(
       rooms.map(async (room) => {
         const roomUsers = room.users as Prisma.JsonArray;
+        delete room.users;
         const otherUserId = roomUsers.find((id) => userId !== id);
         const user = await this.userService.findById(otherUserId.toString(), {
           id: true,

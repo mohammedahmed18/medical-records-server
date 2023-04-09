@@ -10,7 +10,7 @@
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
     "start": "nest start",
     "dev": "nest start --watch",
-    "dev:old": "pm2 start \"nest start --watch\" --name medical-records-server",
+    "dev:old": "pm2 start \"pnpm dev\" --name medical-records-server",
     "prisma-studio": "npx prisma studio",
     "start:debug": "nest start --debug --watch",
     "start:prod-beta": "pm2 start \"nest start\" --name medical-records-server",
