@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
 import { PrismaService } from 'src/database/prisma.service';
 import { CreateMessageInputType } from 'src/graphql';
@@ -108,7 +108,5 @@ export class ChatService {
     
 
     return message;
-  }
-
-  
+  } 
 }

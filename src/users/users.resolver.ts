@@ -22,6 +22,7 @@ export class UserResolver {
 
   @Mutation(() => String)
   @UseValidation(createUserSchema)
+  @Public()
   async createUser(@Args('data') CreateUserInput: CreateUserInput) {
     return await this.userService.createUser(CreateUserInput);
   }
