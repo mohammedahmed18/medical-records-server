@@ -197,9 +197,11 @@ model Message {
   type  MessageType @default(text)
   value String
 
-  sender             User   @relation(fields: [senderId], references: [id])
-  senderId           String
-  
+  sender   User   @relation(fields: [senderId], references: [id])
+  senderId String
+
+  createdAt DateTime @default(now())
+
   // won't be used anyway
   last_message_rooms Room[] @relation("last_mesage_room_fk")
 
@@ -207,15 +209,15 @@ model Message {
 }
 
 model Room {
-  id            String    @id @unique @default(uuid())
+  id String @id @unique @default(uuid())
 
-  lastMessage   Message?   @relation(fields: [lastMessageId], references: [id], name: "last_mesage_room_fk")
+  lastMessage   Message? @relation(fields: [lastMessageId], references: [id], name: "last_mesage_room_fk")
   lastMessageId String?
-  
-  lastMessageTimestamp    DateTime   @default(now())
-  users         Json      @default("[]")
 
-  messages      Message[] @relation("mesage_room_fk")
+  lastMessageTimestamp DateTime @default(now())
+  users                Json     @default("[]")
+
+  messages Message[] @relation("mesage_room_fk")
 
   @@map("rooms")
 }
@@ -225,4 +227,3 @@ model Room {
 
 // TODO:
 // model : Attachments
-

@@ -11,6 +11,6 @@ export type getMedicalRecordsArgs = {
 export type getDoctorsOptions = {
   perPage : string
   cursor : string
-  
+  search: string
   medicalSpecialization ? : keyof typeof MedicalSpecialization
 }

@@ -83,6 +83,7 @@ type MessageType {
   roomId: String!
   type: MessageKinds!
   value: String!
+  createdAt: DateTime!
 }
 
 """kinds of each message"""
@@ -113,6 +114,7 @@ type Query {
   users: [UserProfile!]!
   me: UserProfile!
   getMyRooms: [RoomType!]!
+  getRoomMessages(roomId: String!): [MessageType!]!
 }
 
 type Mutation {

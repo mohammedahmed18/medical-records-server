@@ -25,9 +25,10 @@ export class DoctorsController {
   async getDoctors(
     @Query("medicalSpecialization") medicalSpecialization,
     @Query("perPage") perPage,
-    @Query("cursor") cursor
+    @Query("cursor") cursor,
+    @Query("q") search
     ){
-    return  await this.doctorService.getAllDoctors({medicalSpecialization , cursor , perPage});
+    return await this.doctorService.getAllDoctors({medicalSpecialization , cursor , perPage , search});
   }
 
 }

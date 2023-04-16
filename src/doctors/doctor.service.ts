@@ -26,7 +26,7 @@ export class DoctorService {
 
   async getAllDoctors(options : getDoctorsOptions){
 
-    const { medicalSpecialization , cursor , perPage } = options
+    const { medicalSpecialization , cursor , perPage , search} = options
 
     if(medicalSpecialization && ! Object.keys(MedicalSpecialization).includes(medicalSpecialization) )
       throw new BadRequestException("medical specialization not allowed")
@@ -36,7 +36,7 @@ export class DoctorService {
         id : cursor
     }
     return await this.prisma.user.findMany({
-      where : {NOT : {medicalSpecialization : null} , medicalSpecialization : options.medicalSpecialization},
+      where : {NOT : {medicalSpecialization : null} , medicalSpecialization : options.medicalSpecialization , name : {contains : search}},
       take: perPage ? parseInt(perPage) : 10,
       skip : cursor ? 1 : undefined,
       cursor : curosrCraiteria,

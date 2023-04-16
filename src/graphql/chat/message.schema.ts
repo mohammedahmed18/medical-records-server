@@ -17,4 +17,7 @@ export class MessageType {
 
     @Field()
     value : string
+
+    @Field(() => Date)
+    createdAt : string
 }

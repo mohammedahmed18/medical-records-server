@@ -1,5 +1,5 @@
 import { PubSub } from 'graphql-subscriptions';
-import { Injectable } from '@nestjs/common';
+import { ForbiddenException, Injectable } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
 import { PrismaService } from 'src/database/prisma.service';
 import { CreateMessageInputType } from 'src/graphql';
@@ -30,6 +30,7 @@ export class ChatService {
         },
       });
   }
+  // TODO: pagination
   async getUserRoomsForClient(userId) {
     const rooms = await this.getUserRooms(userId)
 
@@ -80,6 +81,7 @@ export class ChatService {
   async sendMessage(currentUserId: string , createMessageInput : CreateMessageInputType, pubSub: PubSub) {
 
     const {toId , type ,value} = createMessageInput
+    
     let room = await this.prisma.room.findFirst({
       where: { users: { array_contains: [currentUserId, toId] } },
     });
@@ -114,4 +116,27 @@ export class ChatService {
     pubSub.publish(MESSAGE_SENT , message)
     return message;
   } 
+
+  async getRoomMessages(currentUserId : string , roomId : string){
+    // get the room
+    const room = await this.prisma.room.findFirst(
+      {
+        where : {id : roomId},
+        include : {messages : {
+          // TODO: make orderby desc & pagination 
+          orderBy : { createdAt : "asc" },
+          // take : 10 
+        }},
+      }
+      );
+  
+    // make sure the current user exists in this room
+     const users = room.users as Prisma.JsonArray
+
+    if(! users.includes(currentUserId))
+      throw new ForbiddenException("you can't access this room")
+  
+    // get room messages
+    return room.messages
+    }
 }

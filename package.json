@@ -52,7 +52,6 @@
     "cache-manager-redis-store": "^2.0.0",
     "cloudinary": "^1.35.0",
     "cookie-parser": "^1.4.6",
-    "crypto": "^1.0.1",
     "graphql": "^16.6.0",
     "graphql-iso-date": "^3.6.1",
     "graphql-subscriptions": "^2.0.0",
