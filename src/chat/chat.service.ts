@@ -45,6 +45,8 @@ export class ChatService {
           name: true,
         });
 
+        room.lastMessage["isMe"] = userId === room.lastMessage.senderId
+
         return {
           ...room,
           otherUser: {

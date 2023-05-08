@@ -93,6 +93,16 @@ enum MessageKinds {
   medicalRecord
 }
 
+type LastMessageType {
+  id: String!
+  senderId: String!
+  roomId: String!
+  type: MessageKinds!
+  value: String!
+  createdAt: DateTime!
+  isMe: Boolean!
+}
+
 type RoomUserType {
   id: String!
   name: String!
@@ -101,7 +111,7 @@ type RoomUserType {
 
 type RoomType {
   id: String!
-  lastMessage: MessageType!
+  lastMessage: LastMessageType!
   otherUser: RoomUserType!
   lastMessageTimestamp: String!
 }
