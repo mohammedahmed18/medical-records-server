@@ -37,7 +37,7 @@ export class DoctorService {
     }
     return await this.prisma.user.findMany({
       where : {NOT : {medicalSpecialization : null} , medicalSpecialization : options.medicalSpecialization , name : {contains : search}},
-      take: perPage ? parseInt(perPage) : 10,
+      take: perPage ? parseInt(perPage) : undefined,
       skip : cursor ? 1 : undefined,
       cursor : curosrCraiteria,
       select : {
