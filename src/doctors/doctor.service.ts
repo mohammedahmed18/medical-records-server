@@ -5,6 +5,7 @@ import { PrismaService } from 'src/database/prisma.service';
 import { MedicalSpecialization } from 'src/graphql';
 import { getDoctorsOptions } from 'src/medicalRecords/types';
 import { UsersService } from 'src/users/users.service';
+import { resizeCloudinaryImage } from 'src/utils/resizeCloudinaryImage';
 
 @Injectable()
 export class DoctorService {
@@ -35,7 +36,7 @@ export class DoctorService {
     if(cursor) curosrCraiteria = {
         id : cursor
     }
-    return await this.prisma.user.findMany({
+    const doctors = await this.prisma.user.findMany({
       where : {NOT : {medicalSpecialization : null} , medicalSpecialization : options.medicalSpecialization , name : {contains : search}},
       take: perPage ? parseInt(perPage) : undefined,
       skip : cursor ? 1 : undefined,
@@ -47,5 +48,7 @@ export class DoctorService {
         image_src : true
       }
     })
+
+    return doctors.map(doctor => ({...doctor , image_src : resizeCloudinaryImage(doctor.image_src , {square : true , size : 400})}))
   }
 }
