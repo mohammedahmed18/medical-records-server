@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { CustomError } from 'src/common/errors';
 import { SCAN_YOUR_SELF_ERR_CODE } from 'src/constants';
 import { PrismaService } from 'src/database/prisma.service';
@@ -50,5 +50,20 @@ export class DoctorService {
     })
 
     return doctors.map(doctor => ({...doctor , image_src : resizeCloudinaryImage(doctor.image_src , {square : true , size : 400})}))
+  }
+
+  async getDoctor(doctorId: string){
+    //
+    const doctor = this.userService.findById(doctorId,{
+      name: true,
+      image_src: true,
+      medicalSpecialization: true,
+      email: true,
+      _count: {select : {writtenMedicalRecors : true}}
+    })
+
+    if(!doctor) throw new NotFoundException("No user found")
+
+    return doctor
   }
 }

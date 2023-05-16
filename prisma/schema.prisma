@@ -67,6 +67,12 @@ enum MedicalRecordsActionTypes {
   LabTest
 }
 
+enum DoctorRequestStatus {
+  waiting
+  accepted
+  denied
+}
+
 model Marital_Status {
   id    Int    @id @default(autoincrement()) @db.Integer
   label String
@@ -124,6 +130,7 @@ model User {
   // FIXME: writtenMedicalRecors is not descriptive
   writtenMedicalRecors Medical_Record[] @relation("doctor_medical_records_FK") // this will return array of all the records that the doctor wrote , 
   messages             Message[]
+  doctorRequests       DoctorRequest[]
 
   @@map("users")
 }
@@ -137,8 +144,9 @@ model Admin {
   username String
   password String
 
-  role   Role   @relation(fields: [roleId], references: [id])
-  roleId String
+  role                  Role            @relation(fields: [roleId], references: [id])
+  roleId                String
+  reviewedDoctorRequest DoctorRequest[]
 
   @@map("admins")
 }
@@ -166,17 +174,18 @@ model Permission {
 }
 
 model Medical_Record {
-  id         String                    @id @default(uuid())
-  user       User                      @relation(fields: [userId], references: [id], name: "user_medical_records_FK")
-  userId     String
-  title      String
-  details    Json?                     @default("[]")
-  doctor     User?                     @relation(fields: [doctorId], references: [id], name: "doctor_medical_records_FK")
-  doctorId   String?
-  createdAt  DateTime                  @default(now())
-  updatedAt  DateTime                  @updatedAt
-  lifetime   Boolean                   @default(false)
-  actionType MedicalRecordsActionTypes @default(Generic)
+  id          String                    @id @default(uuid())
+  user        User                      @relation(fields: [userId], references: [id], name: "user_medical_records_FK")
+  userId      String
+  title       String
+  details     Json?                     @default("[]")
+  doctor      User?                     @relation(fields: [doctorId], references: [id], name: "doctor_medical_records_FK")
+  doctorId    String?
+  createdAt   DateTime                  @default(now())
+  updatedAt   DateTime                  @updatedAt
+  lifetime    Boolean                   @default(false)
+  actionType  MedicalRecordsActionTypes @default(Generic)
+  attachments Attachment[]
 
   @@map("medicalRecords")
 }
@@ -222,8 +231,33 @@ model Room {
   @@map("rooms")
 }
 
-// model : medical records
+model DoctorRequest {
+  id String @id @unique @default(uuid())
+
+  medicalSpecialization MedicalSpecialization
+
+  user   User   @relation(fields: [userId], references: [id])
+  userId String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  moderator   Admin?  @relation(fields: [moderatorId], references: [id])
+  moderatorId String?
+
+  status DoctorRequestStatus @default(waiting)
+
+  attachment   Attachment? @relation(fields: [attachmentId], references: [id])
+  attachmentId String?
+}
+
 // attachmentId : //TODO: 
 
-// TODO:
-// model : Attachments
+model Attachment {
+  id               String          @id @unique @default(uuid())
+  path             String
+  sizeInKb         Float?
+  DoctorRequest    DoctorRequest[]
+  Medical_Record   Medical_Record? @relation(fields: [medical_RecordId], references: [id])
+  medical_RecordId String?
+}

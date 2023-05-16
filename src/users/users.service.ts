@@ -85,6 +85,17 @@ export class UsersService {
     return users.map(this.mapUserToProfile);
   }
 
+  async getUserDetailsForOtherUsers(userId: string){
+    const user = await this.findById(userId,{
+      medicalSpecialization : true,
+      name: true,
+      image_src: true,
+      id: true
+    })
+    if(! user) throw new NotFoundException("No User Found")
+    return {user}
+  }
+
   mapUserToProfile(user: Partial<User>): Partial<UserProfile> {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { educationalLevel, employmentStatus, maritalStatus, ...rest } = user;

@@ -20,10 +20,10 @@ export class ChatResolver{
         return this.chatService.getUserRoomsForClient(currentUserId);
     }
 
-    @Query(() => [MessageType])
-    async getRoomMessages(@getCurrentUser("id") currentUserId : string, @Args("roomId") roomId : string){
-        return this.chatService.getRoomMessages(currentUserId , roomId)
-    }
+    // @Query(() => [MessageType])
+    // async getRoomMessages(@getCurrentUser("id") currentUserId : string, @Args("roomId") roomId : string){
+    //     return this.chatService.getRoomMessages(currentUserId , roomId)
+    // }
 
     @Mutation(() => MessageType)
     async sendMessage(@getCurrentUser("id") currentUserId : string , @Args("data") createMessageInput : CreateMessageInputType){

@@ -1,5 +1,5 @@
 import { Doctor } from './../common/decorators/doctor.decorator';
-import { Body, Controller, Get, HttpCode, HttpStatus, Post, Query } from '@nestjs/common';
+import { Body, Controller, Get, HttpCode, HttpStatus, Param, Post, Query } from '@nestjs/common';
 import { DOCTORS_BASE_URL } from 'src/constants';
 import { DoctorService } from './doctor.service';
 import { getQrNationalId, ValidateQrCode } from './decorators';
@@ -31,4 +31,8 @@ export class DoctorsController {
     return await this.doctorService.getAllDoctors({medicalSpecialization , cursor , perPage , search});
   }
 
+  @Get("/:doctorId")
+  async getDoctorProfile(@Param("doctorId") doctorId){
+    return this.doctorService.getDoctor(doctorId);
+  }
 }

@@ -16,6 +16,9 @@ import { AdminModule } from './admin/admin.module';
 import { RedisConfigModule } from './redis/redis.module';
 import { ChatModule } from './chat/chat.module';
 import { GraphQLDateTime } from 'graphql-iso-date';
+import { DoctorRequestModule } from './doctorRequests/DoctorRequest.module';
+import { OpenAIModule } from './openai/openai.module';
+import { CLIENT_URL } from './constants';
 
 
 @Module({
@@ -25,7 +28,9 @@ import { GraphQLDateTime } from 'graphql-iso-date';
     AuthModule,
     UsersModule,
     DoctorsModule,
+    DoctorRequestModule,
     MedicalRecordsModule,
+    OpenAIModule,
     ConfigModule.forRoot({ isGlobal: true }),
     GraphQLModule.forRoot<ApolloDriverConfig>({
       driver: ApolloDriver,
@@ -36,6 +41,10 @@ import { GraphQLDateTime } from 'graphql-iso-date';
       persistedQueries: false,
       resolvers: { DateTime: GraphQLDateTime },
       installSubscriptionHandlers: true,
+      cors:{
+        origin: CLIENT_URL,
+        credentials: true,
+      },
       subscriptions: {
         'graphql-ws': true,
         'subscriptions-transport-ws': {

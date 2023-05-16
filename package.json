@@ -50,6 +50,7 @@
     "argon2": "^0.30.3",
     "cache-manager": "^5.0.0",
     "cache-manager-redis-store": "^2.0.0",
+    "chatgpt": "^5.2.4",
     "cloudinary": "^1.35.0",
     "cookie-parser": "^1.4.6",
     "graphql": "^16.6.0",

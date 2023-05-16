@@ -124,7 +124,6 @@ type Query {
   users: [UserProfile!]!
   me: UserProfile!
   getMyRooms: [RoomType!]!
-  getRoomMessages(roomId: String!): [MessageType!]!
 }
 
 type Mutation {

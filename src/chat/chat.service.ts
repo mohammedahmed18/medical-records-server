@@ -1,5 +1,5 @@
 import { PubSub } from 'graphql-subscriptions';
-import { ForbiddenException, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
 import { PrismaService } from 'src/database/prisma.service';
 import { CreateMessageInputType } from 'src/graphql';
@@ -38,14 +38,18 @@ export class ChatService {
       rooms.map(async (room) => {
         const roomUsers = room.users as Prisma.JsonArray;
         delete room.users;
-        const otherUserId = roomUsers.find((id) => userId !== id);
+        
+        const privateChat = roomUsers[0] === roomUsers[1]
+
+        const otherUserId = privateChat ? userId : roomUsers.find((id) => userId !== id);
         const user = await this.userService.findById(otherUserId.toString(), {
           id: true,
           image_src: true,
           name: true,
         });
 
-        room.lastMessage["isMe"] = userId === room.lastMessage.senderId
+        if(room.lastMessage)
+          room.lastMessage["isMe"] = userId === room.lastMessage?.senderId
 
         return {
           ...room,
@@ -60,11 +64,14 @@ export class ChatService {
     return roomsWithOtherUsers;
   }
 
-  private async createRoom(otherUserId, currentUserId) {
+  private async createRoom(...userIds) {
     const room = await this.prisma.room.create({
       data: {
-        users: [otherUserId, currentUserId],
+        users: [...userIds],
       },
+      include: {
+        messages: true
+      }
     });
 
     return room;
@@ -80,13 +87,38 @@ export class ChatService {
     });
   }
 
+  // private room will have two of the same user id in users array
+  // so that our code doesn't break
+  async getPrivateRoom(userId , withMessages= false){
+    let privateRoom = await this.prisma.room.findFirst({
+      where: { users: { equals: [userId , userId] } },
+      include : withMessages ? {messages : {
+              // TODO: make orderby desc & pagination 
+              orderBy : { createdAt : "asc" },
+              // take : 10 
+            }} : null,
+    });
+    if(!privateRoom){
+      // create the room if not exist
+      privateRoom = await this.createRoom(userId , userId)
+    }
+    return privateRoom;
+  }
+  async getRoomWithOtherUser(currentUserId: string , otherUserId: string, withMessages = false){
+    return await this.prisma.room.findFirst({
+      where: { users: { array_contains: [currentUserId, otherUserId] } },
+      include : withMessages ? {messages : {
+              // TODO: make orderby desc & pagination 
+              orderBy : { createdAt : "asc" },
+              // take : 10 
+            }} : null,
+    });
+  }
   async sendMessage(currentUserId: string , createMessageInput : CreateMessageInputType, pubSub: PubSub) {
 
     const {toId , type ,value} = createMessageInput
-    
-    let room = await this.prisma.room.findFirst({
-      where: { users: { array_contains: [currentUserId, toId] } },
-    });
+    const isPrivate = currentUserId === toId
+    let room = isPrivate ? await this.getPrivateRoom(currentUserId) : await this.getRoomWithOtherUser(currentUserId , toId)
 
     if (!room) {
       const createdRoom = await this.createRoom(
@@ -119,26 +151,40 @@ export class ChatService {
     return message;
   } 
 
-  async getRoomMessages(currentUserId : string , roomId : string){
-    // get the room
-    const room = await this.prisma.room.findFirst(
-      {
-        where : {id : roomId},
-        include : {messages : {
-          // TODO: make orderby desc & pagination 
-          orderBy : { createdAt : "asc" },
-          // take : 10 
-        }},
-      }
-      );
-  
-    // make sure the current user exists in this room
-     const users = room.users as Prisma.JsonArray
+  async getRoomMessages(currentUserId:string ,otherUserId : string){
+    if(currentUserId === otherUserId) {
+      // get my private chat
+      const myPrivateRoom = await this.getPrivateRoom(currentUserId, true);
+      
+      return myPrivateRoom?.messages || []
+    }
+    const room = await this.getRoomWithOtherUser(currentUserId, otherUserId , true)
+    if(!room) return [] //if theres is no previous messages return empty array
+   
+    return room.messages.map(message => {
+      const isMe = message.senderId === currentUserId
+      return {...message , isMe}
+    })
 
-    if(! users.includes(currentUserId))
-      throw new ForbiddenException("you can't access this room")
+    // get the room
+    // const room = await this.prisma.room.findFirst(
+    //   {
+    //     where : {id : roomId},
+    //     include : {messages : {
+    //       // TODO: make orderby desc & pagination 
+    //       orderBy : { createdAt : "asc" },
+    //       // take : 10 
+    //     }},
+    //   }
+    //   );
   
-    // get room messages
-    return room.messages
+    // // make sure the current user exists in this room
+    //  const users = room.users as Prisma.JsonArray
+
+    // if(! users.includes(currentUserId))
+    //   throw new ForbiddenException("you can't access this room")
+  
+    // // get room messages
+    // return room.messages
     }
 }
