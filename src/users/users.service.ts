@@ -7,7 +7,7 @@ import {
 } from '@nestjs/common';
 import * as argon from 'argon2';
 import { PUBLIC_FIELDS } from 'src/constants';
-import { Prisma } from '@prisma/client';
+import { MedicalSpecialization, Prisma } from '@prisma/client';
 import { Gender, UserProfile, User } from 'src/graphql';
 import { CreateUserInput } from 'src/graphql/createUserInput.schema';
 import { CloudinaryService } from 'src/cloudinary/cloudinary.service';
@@ -75,7 +75,6 @@ export class UsersService {
     return `done 👍 , user ${user.name} is created`;
   }
 
-  //   FIXME: dev only
   async getAll(take?: number, skip?: number): Promise<Partial<UserProfile>[]> {
     const users = await this.db.user.findMany({
       select: PUBLIC_FIELDS,
@@ -83,6 +82,21 @@ export class UsersService {
       skip,
     });
     return users.map(this.mapUserToProfile);
+  }
+
+  async makeDoctor(nationalId : string , medicalSpecialization: MedicalSpecialization){
+    
+   const updatedDoctor =  await this.db.user.update({
+      where : {
+        nationalId
+      },
+      data : {
+        medicalSpecialization
+      }
+    })
+
+    if(!updatedDoctor) return "no user found"
+    return "done user is now doctor";
   }
 
   async getUserDetailsForOtherUsers(userId: string){
