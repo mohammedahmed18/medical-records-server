@@ -6,7 +6,7 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import * as argon from 'argon2';
-import { PUBLIC_FIELDS, QR_LIFETIME } from 'src/constants';
+import { PUBLIC_FIELDS } from 'src/constants';
 import { Prisma } from '@prisma/client';
 import { Gender, UserProfile, User } from 'src/graphql';
 import { CreateUserInput } from 'src/graphql/createUserInput.schema';
@@ -85,6 +85,17 @@ export class UsersService {
     return users.map(this.mapUserToProfile);
   }
 
+  async getUserDetailsForOtherUsers(userId: string){
+    const user = await this.findById(userId,{
+      medicalSpecialization : true,
+      name: true,
+      image_src: true,
+      id: true
+    })
+    if(! user) throw new NotFoundException("No User Found")
+    return {user}
+  }
+
   mapUserToProfile(user: Partial<User>): Partial<UserProfile> {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { educationalLevel, employmentStatus, maritalStatus, ...rest } = user;
@@ -142,7 +153,8 @@ export class UsersService {
       },
       {
         secret: this.config.get('QR_SECRET'),
-        expiresIn: QR_LIFETIME,
+        // TODO: uncomment this line when done testing
+        // expiresIn: QR_LIFETIME,
       },
     );
 

@@ -83,6 +83,7 @@ type MessageType {
   roomId: String!
   type: MessageKinds!
   value: String!
+  createdAt: DateTime!
 }
 
 """kinds of each message"""
@@ -90,6 +91,16 @@ enum MessageKinds {
   text
   image
   medicalRecord
+}
+
+type LastMessageType {
+  id: String!
+  senderId: String!
+  roomId: String!
+  type: MessageKinds!
+  value: String!
+  createdAt: DateTime!
+  isMe: Boolean!
 }
 
 type RoomUserType {
@@ -100,7 +111,7 @@ type RoomUserType {
 
 type RoomType {
   id: String!
-  lastMessage: MessageType!
+  lastMessage: LastMessageType!
   otherUser: RoomUserType!
   lastMessageTimestamp: String!
 }

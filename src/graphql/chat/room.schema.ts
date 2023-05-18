@@ -1,5 +1,5 @@
 import { Field, ObjectType } from "@nestjs/graphql"
-import { MessageType } from "./message.schema"
+import { LastMessageType } from "./message.schema"
 
 
 
@@ -21,8 +21,8 @@ export class RoomType {
     @Field()
     id : string
 
-    @Field(() => MessageType)
-    lastMessage : MessageType
+    @Field(() => LastMessageType)
+    lastMessage : LastMessageType
 
     @Field(() => RoomUserType)
     otherUser : RoomUserType
@@ -31,5 +31,3 @@ export class RoomType {
     lastMessageTimestamp : string
 
 }
-
-

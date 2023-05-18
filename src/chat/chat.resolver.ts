@@ -20,12 +20,17 @@ export class ChatResolver{
         return this.chatService.getUserRoomsForClient(currentUserId);
     }
 
+    // @Query(() => [MessageType])
+    // async getRoomMessages(@getCurrentUser("id") currentUserId : string, @Args("roomId") roomId : string){
+    //     return this.chatService.getRoomMessages(currentUserId , roomId)
+    // }
+
     @Mutation(() => MessageType)
     async sendMessage(@getCurrentUser("id") currentUserId : string , @Args("data") createMessageInput : CreateMessageInputType){
         return this.chatService.sendMessage(currentUserId, createMessageInput, this.pubSub);
     }
 
-    // later wa can have a message queue instead like rabbitMQ
+    // later we can have a message queue (message broker) instead like rabbitMQ or nats
     @Subscription(() => MessageType,{
         name : MESSAGE_SENT,
         filter: (message : MessageType & {to : string}, _ , context) => {

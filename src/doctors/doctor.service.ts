@@ -1,10 +1,11 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { CustomError } from 'src/common/errors';
 import { SCAN_YOUR_SELF_ERR_CODE } from 'src/constants';
 import { PrismaService } from 'src/database/prisma.service';
 import { MedicalSpecialization } from 'src/graphql';
 import { getDoctorsOptions } from 'src/medicalRecords/types';
 import { UsersService } from 'src/users/users.service';
+import { resizeCloudinaryImage } from 'src/utils/resizeCloudinaryImage';
 
 @Injectable()
 export class DoctorService {
@@ -26,7 +27,7 @@ export class DoctorService {
 
   async getAllDoctors(options : getDoctorsOptions){
 
-    const { medicalSpecialization , cursor , perPage } = options
+    const { medicalSpecialization , cursor , perPage , search} = options
 
     if(medicalSpecialization && ! Object.keys(MedicalSpecialization).includes(medicalSpecialization) )
       throw new BadRequestException("medical specialization not allowed")
@@ -35,9 +36,9 @@ export class DoctorService {
     if(cursor) curosrCraiteria = {
         id : cursor
     }
-    return await this.prisma.user.findMany({
-      where : {NOT : {medicalSpecialization : null} , medicalSpecialization : options.medicalSpecialization},
-      take: perPage ? parseInt(perPage) : 10,
+    const doctors = await this.prisma.user.findMany({
+      where : {NOT : {medicalSpecialization : null} , medicalSpecialization : options.medicalSpecialization , name : {contains : search}},
+      take: perPage ? parseInt(perPage) : undefined,
       skip : cursor ? 1 : undefined,
       cursor : curosrCraiteria,
       select : {
@@ -47,5 +48,22 @@ export class DoctorService {
         image_src : true
       }
     })
+
+    return doctors.map(doctor => ({...doctor , image_src : resizeCloudinaryImage(doctor.image_src , {square : true , size : 400})}))
+  }
+
+  async getDoctor(doctorId: string){
+    //
+    const doctor = this.userService.findById(doctorId,{
+      name: true,
+      image_src: true,
+      medicalSpecialization: true,
+      email: true,
+      _count: {select : {writtenMedicalRecors : true}}
+    })
+
+    if(!doctor) throw new NotFoundException("No user found")
+
+    return doctor
   }
 }

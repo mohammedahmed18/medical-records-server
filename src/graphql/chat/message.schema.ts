@@ -17,4 +17,14 @@ export class MessageType {
 
     @Field()
     value : string
+
+    @Field(() => Date)
+    createdAt : string
+}
+
+
+@ObjectType()
+export class LastMessageType extends MessageType{
+    @Field(() => Boolean)
+    isMe: boolean
 }

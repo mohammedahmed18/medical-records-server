@@ -1,4 +1,4 @@
-import { CLIENT_URL, NETLIFY_URL, SERVER_URL } from './constants/common';
+import { SERVER_URL, CLIENT_WHITELIST } from './constants/common';
 import { NotFoundExceptionFilter } from './common/Exceptions/NotFoundException';
 import { ErrorInterceptor } from './common/interceptors';
 import { NestFactory } from '@nestjs/core';
@@ -9,7 +9,7 @@ import helmet from 'helmet';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
-  const whiteList = [CLIENT_URL , NETLIFY_URL ,SERVER_URL ]
+  const whiteList = [ ...CLIENT_WHITELIST ,SERVER_URL ]
   app.useGlobalFilters(new NotFoundExceptionFilter());
   app.useGlobalInterceptors(new ErrorInterceptor());
   app.use(cookieParser(process.env.COOKIE_SECRET));
@@ -24,6 +24,7 @@ async function bootstrap() {
   );
   app.enableCors({
     origin: function (origin, callback) {
+      // Logger.debug({origin})
       if (!origin || whiteList.indexOf(origin) !== -1) {
         callback(null, true)
       } else {

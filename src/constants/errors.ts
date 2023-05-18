@@ -12,5 +12,7 @@ export const error_msgs = {
 
 export const INVALID_LOGIN = '04557';
 export const EXPIRED_QR_CODE = 'P__ee04557';
+export const EXPIRED_TOKEN = 'P__xe04557';
+export const INVALID_TOKEN = 'P__xe04500';
 export const INVALID_QR_CODE = 'P__ee05557';
 export const SCAN_YOUR_SELF_ERR_CODE = 'S__yy2';

@@ -1,13 +1,10 @@
-FROM node:19.0-alpine As development
+FROM node:19.0-alpine As production
 
 WORKDIR /app
 
-COPY package.json ./
-COPY pnpm-lock.yaml ./
+COPY package*.json ./
 
-RUN npm i -g pnpm
-
-RUN pnpm i
+RUN npm install --legacy-peer-deps
 
 COPY . .
 

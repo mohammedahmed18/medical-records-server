@@ -9,6 +9,7 @@ import {
   HttpStatus,
   UseInterceptors,
   UploadedFile,
+  Param,
 } from '@nestjs/common';
 import { getCurrentUser, Public, UseValidation } from 'src/common/decorators';
 import { USERS_BASE_URL } from 'src/constants';
@@ -43,6 +44,11 @@ export class UsersController {
   @Get('/me')
   async getUserProfile(@getCurrentUser('id') userId: string) {
     return await this.usersService.loggedInUserProfile(userId);
+  }
+
+  @Get('/:userId')
+  async getUserDetailsForOtherUsers(@Param("userId") userId) {
+    return await this.usersService.getUserDetailsForOtherUsers(userId);
   }
 
   @UseInterceptors(FileInterceptor('image'))
