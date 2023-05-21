@@ -1,4 +1,4 @@
-import { Controller, Get, Param } from "@nestjs/common";
+import { Body, Controller, Delete, Get, Param } from "@nestjs/common";
 import { getCurrentUser } from "src/common/decorators";
 import { CHAT_BASE_URL } from "src/constants";
 import { ChatService } from "./chat.service";
@@ -17,5 +17,11 @@ export class ChatController{
     @Get("/room-messages/:userId")
     async getRoomMessages(@Param("userId") otherUserId, @getCurrentUser("id") currentUserId : string){
         return this.chatService.getRoomMessages(currentUserId, otherUserId);
+    }
+    @Delete("clear-chat")
+    async clearChat(@getCurrentUser("id") currentUserId : string , @Body("userId") otherUserId){
+        //
+        return this.chatService.clearChat(currentUserId, otherUserId);
+
     }
 }

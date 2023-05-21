@@ -1,7 +1,7 @@
 import { Args, Mutation, Query, Resolver, Subscription } from "@nestjs/graphql";
 import { Public, getCurrentUser } from "src/common/decorators";
 import { ChatService } from "./chat.service";
-import { CreateMessageInputType, MessageType, RoomType } from "src/graphql";
+import { CreateMessageInputType, MessageSentType, MessageType, RoomType } from "src/graphql";
 import { PubSub } from "graphql-subscriptions";
 import { MESSAGE_SENT } from "src/constants";
 
@@ -25,15 +25,16 @@ export class ChatResolver{
     //     return this.chatService.getRoomMessages(currentUserId , roomId)
     // }
 
-    @Mutation(() => MessageType)
-    async sendMessage(@getCurrentUser("id") currentUserId : string , @Args("data") createMessageInput : CreateMessageInputType){
-        return this.chatService.sendMessage(currentUserId, createMessageInput, this.pubSub);
+    @Mutation(() => MessageSentType)
+    async sendMessage(@getCurrentUser() currentUser , @Args("data") createMessageInput : CreateMessageInputType): Promise<MessageSentType>{
+        return this.chatService.sendMessage(currentUser, createMessageInput, this.pubSub);
     }
 
     // later we can have a message queue (message broker) instead like rabbitMQ or nats
-    @Subscription(() => MessageType,{
+    @Subscription(() => MessageSentType,{
         name : MESSAGE_SENT,
-        filter: (message : MessageType & {to : string}, _ , context) => {
+        
+        filter: (message :MessageSentType, _ , context) => {
             const {id : currentUserId} = context.req.user
             return currentUserId === message.to
         },

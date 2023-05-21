@@ -4,7 +4,7 @@ import { LastMessageType } from "./message.schema"
 
 
 @ObjectType()
-class RoomUserType {
+export class RoomUserType {
     @Field()
     id : string
   

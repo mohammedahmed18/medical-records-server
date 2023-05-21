@@ -1,5 +1,6 @@
 import { Field, ObjectType } from "@nestjs/graphql";
 import { MessageKinds } from "../enums.schema";
+import { RoomUserType } from "./room.schema";
 
 @ObjectType()
 export class MessageType {
@@ -21,6 +22,17 @@ export class MessageType {
     @Field(() => Date)
     createdAt : string
 }
+
+
+@ObjectType()
+export class MessageSentType extends  MessageType{
+    @Field()
+    to: string
+
+    @Field(() => RoomUserType)
+    sentUser : RoomUserType
+}
+
 
 
 @ObjectType()
