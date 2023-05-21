@@ -1,5 +1,5 @@
 import { Args, Mutation, Query, Resolver, Subscription } from "@nestjs/graphql";
-import { getCurrentUser } from "src/common/decorators";
+import { Public, getCurrentUser } from "src/common/decorators";
 import { ChatService } from "./chat.service";
 import { CreateMessageInputType, MessageType, RoomType } from "src/graphql";
 import { PubSub } from "graphql-subscriptions";
