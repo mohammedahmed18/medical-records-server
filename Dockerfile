@@ -18,6 +18,8 @@ ARG DEBIAN_FRONTEND=noninteractive
 RUN apt-get install -y gnupg2 lsb-release \
     && sh -c 'echo "deb http://apt.postgresql.org/pub/repos/apt $(lsb_release -cs)-pgdg main" > /etc/apt/sources.list.d/pgdg.list' \ 
     && wget --no-check-certificate --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | apt-key add - \
+    && curl -sL https://deb.nodesource.com/setup_14.x | bash - \
+    && apt-get install -y nodejs \
     && apt update \
     && apt-get install -y --no-install-recommends postgresql-15 \
     && apt-get clean \
