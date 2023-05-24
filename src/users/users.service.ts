@@ -7,13 +7,12 @@ import {
 } from '@nestjs/common';
 import * as argon from 'argon2';
 import { PUBLIC_FIELDS } from 'src/constants';
-import { Prisma } from '@prisma/client';
+import { MedicalSpecialization, Prisma } from '@prisma/client';
 import { Gender, UserProfile, User } from 'src/graphql';
 import { CreateUserInput } from 'src/graphql/createUserInput.schema';
 import { CloudinaryService } from 'src/cloudinary/cloudinary.service';
 import { ConfigService } from '@nestjs/config';
 import { resizeCloudinaryImage } from 'src/utils/resizeCloudinaryImage';
-
 
 @Injectable()
 export class UsersService {
@@ -75,7 +74,6 @@ export class UsersService {
     return `done 👍 , user ${user.name} is created`;
   }
 
-  //   FIXME: dev only
   async getAll(take?: number, skip?: number): Promise<Partial<UserProfile>[]> {
     const users = await this.db.user.findMany({
       select: PUBLIC_FIELDS,
@@ -85,15 +83,32 @@ export class UsersService {
     return users.map(this.mapUserToProfile);
   }
 
-  async getUserDetailsForOtherUsers(userId: string){
-    const user = await this.findById(userId,{
-      medicalSpecialization : true,
+  async makeDoctor(
+    nationalId: string,
+    medicalSpecialization: MedicalSpecialization,
+  ) {
+    const updatedDoctor = await this.db.user.update({
+      where: {
+        nationalId,
+      },
+      data: {
+        medicalSpecialization,
+      },
+    });
+
+    if (!updatedDoctor) return 'no user found';
+    return 'done user is now doctor';
+  }
+
+  async getUserDetailsForOtherUsers(userId: string) {
+    const user = await this.findById(userId, {
+      medicalSpecialization: true,
       name: true,
       image_src: true,
-      id: true
-    })
-    if(! user) throw new NotFoundException("No User Found")
-    return {user}
+      id: true,
+    });
+    if (!user) throw new NotFoundException('No User Found');
+    return { user };
   }
 
   mapUserToProfile(user: Partial<User>): Partial<UserProfile> {
@@ -105,7 +120,10 @@ export class UsersService {
     userProfile.employmentStatus = user.employmentStatus.label;
     userProfile.maritalStatus = user.maritalStatus.label;
     userProfile.educationalLevel = user.educationalLevel.label;
-    userProfile.image_src = resizeCloudinaryImage(user.image_src , {square : true , size : 800} )
+    userProfile.image_src = resizeCloudinaryImage(user.image_src, {
+      square: true,
+      size: 800,
+    });
     return userProfile;
   }
 
@@ -129,7 +147,7 @@ export class UsersService {
       // delete the prev image from cloudinary
       // we don't want to use await here to not block the code
       this.cloudinaryService.deleteImage(user.image_src);
-    } 
+    }
     const image_url: string = await this.cloudinaryService
       .uploadImage(file)
       .catch((err) => {

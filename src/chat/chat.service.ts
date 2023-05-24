@@ -2,9 +2,13 @@ import { PubSub } from 'graphql-subscriptions';
 import { Injectable } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
 import { PrismaService } from 'src/database/prisma.service';
-import { CreateMessageInputType } from 'src/graphql';
+import {
+  CreateMessageInputType,
+  MessageKinds,
+  MessageSentType,
+} from 'src/graphql';
 import { UsersService } from 'src/users/users.service';
-import { resizeCloudinaryImage } from 'src/utils/resizeCloudinaryImage';
+import { squarizeImage } from 'src/utils/resizeCloudinaryImage';
 import { MESSAGE_SENT } from 'src/constants';
 
 @Injectable()
@@ -14,6 +18,7 @@ export class ChatService {
     private readonly userService: UsersService,
   ) {}
 
+  BASE_IMAGE_SIZE = 300;
   private async getUserRooms(userId) {
     return this.prisma.room.findMany({
       where: {
@@ -28,21 +33,21 @@ export class ChatService {
       },
     });
   }
-  async deleteRoom(roomId: string){
+  async deleteRoom(roomId: string) {
     const roomDelete = this.prisma.room.delete({
       where: {
         id: roomId,
-      }
-    })
-  
+      },
+    });
+
     const messagesDelete = this.prisma.message.deleteMany({
       where: {
-        roomId
-      }
-    })
-  
+        roomId,
+      },
+    });
+
     // should delete the messages first before the room
-    return await this.prisma.$transaction([ messagesDelete,roomDelete  ])
+    return await this.prisma.$transaction([messagesDelete, roomDelete]);
   }
 
   // TODO: pagination
@@ -59,22 +64,23 @@ export class ChatService {
         const otherUserId = privateChat
           ? userId
           : roomUsers.find((id) => userId !== id);
-        
-        
-      const otherUser = await this.userService.findById(otherUserId.toString(), {
-          id: true,
-          image_src: true,
-          name: true,
-        });
 
-        if(!otherUser){
+        const otherUser = await this.userService.findById(
+          otherUserId.toString(),
+          {
+            id: true,
+            image_src: true,
+            name: true,
+          },
+        );
+
+        if (!otherUser) {
           // this is a bug as we store the ids of the users in the romm users array
-          // as json in no-sql way , so if the message is sent to id that doesn't exist it will return other user as null 
+          // as json in no-sql way , so if the message is sent to id that doesn't exist it will return other user as null
           // to encounter this we will return null so it gets removed from the response and delete the room in another thread
-          
-          this.deleteRoom(room.id)
-          return null
-          
+
+          this.deleteRoom(room.id);
+          return null;
         }
         if (room.lastMessage)
           room.lastMessage['isMe'] = userId === room.lastMessage?.senderId;
@@ -83,15 +89,15 @@ export class ChatService {
           ...room,
           otherUser: {
             ...otherUser,
-            image_src: resizeCloudinaryImage(otherUser?.image_src, {
-              size: 300,
-              square: true,
-            }),
+            image_src: squarizeImage(
+              otherUser?.image_src,
+              this.BASE_IMAGE_SIZE,
+            ),
           },
         };
       }),
     );
-    return roomsWithOtherUsers.filter(r => r !== null);
+    return roomsWithOtherUsers.filter((r) => r !== null);
   }
 
   private async createRoom(...userIds) {
@@ -119,7 +125,8 @@ export class ChatService {
 
   // private room will have two of the same user id in users array
   // so that our code doesn't break
-  async getPrivateRoom(userId, withMessages = false, createRoom= true) {
+  // TODO: remove any usage of this as it's used in getRoomWithOtherUser method
+  async getPrivateRoom(userId, withMessages = false, createRoom = true) {
     let privateRoom = await this.prisma.room.findFirst({
       where: { users: { equals: [userId, userId] } },
       include: withMessages
@@ -142,8 +149,12 @@ export class ChatService {
     currentUserId: string,
     otherUserId: string,
     withMessages = false,
-    createRoom= true
+    createRoom = true,
   ) {
+    if (currentUserId === otherUserId) {
+      //private room
+      return await this.getPrivateRoom(currentUserId, withMessages, createRoom);
+    }
     let room = await this.prisma.room.findFirst({
       where: { users: { array_contains: [currentUserId, otherUserId] } },
       include: withMessages
@@ -165,20 +176,21 @@ export class ChatService {
     return room;
   }
   async sendMessage(
-    currentUserId: string,
+    currentUser,
     createMessageInput: CreateMessageInputType,
     pubSub: PubSub,
-  ) {
+  ): Promise<MessageSentType> {
     const { toId, type, value } = createMessageInput;
-    const isPrivate = currentUserId === toId;
+    const { id, name, image_src } = currentUser;
+    const isPrivate = id === toId;
 
     const room = isPrivate
-      ? await this.getPrivateRoom(currentUserId)
-      : await this.getRoomWithOtherUser(currentUserId, toId);
+      ? await this.getPrivateRoom(id)
+      : await this.getRoomWithOtherUser(id, toId);
 
     const message = await this.prisma.message.create({
       data: {
-        senderId: currentUserId,
+        senderId: id,
         roomId: room.id,
         type: type || 'text',
         value,
@@ -189,50 +201,79 @@ export class ChatService {
         roomId: true,
         type: true,
         value: true,
+        createdAt: true,
       },
     });
-    // this will help us filter the subscriptions based on the reciever id
-    message['to'] = toId;
 
     this.upadeRoomLastMessage(room.id, message.id);
 
-    pubSub.publish(MESSAGE_SENT, message);
-    return message;
+    const sentMessage = {
+      ...message,
+      type: MessageKinds[message.type],
+      createdAt: message.createdAt.toString(),
+      to: toId, // this will help us filter the subscriptions based on the reciever id
+      sentUser: {
+        id,
+        name,
+        image_src: squarizeImage(image_src, this.BASE_IMAGE_SIZE),
+      },
+    };
+    pubSub.publish(MESSAGE_SENT, sentMessage);
+
+    return sentMessage;
   }
 
   async getRoomMessages(currentUserId: string, otherUserId: string) {
-    const otherUser = await this.userService.findById(otherUserId,{
+    const otherUser = await this.userService.findById(otherUserId, {
       id: true,
       name: true,
       image_src: true,
-      medicalSpecialization: true
+      medicalSpecialization: true,
     });
     if (currentUserId === otherUserId) {
       // get my private chat
-      const myPrivateRoom = await this.getPrivateRoom(currentUserId, true, false);
+      const myPrivateRoom = await this.getPrivateRoom(
+        currentUserId,
+        true,
+        false,
+      );
 
       const messages = myPrivateRoom?.messages || [];
       return {
         isPrivateChat: true,
-        otherUser : {...otherUser},
-        messages: messages.map(m => ({...m , isMe: true})) //isMe will always be true in private chat
-      }
+        otherUser: { ...otherUser },
+        messages: messages.map((m) => ({ ...m, isMe: true })), //isMe will always be true in private chat
+      };
     }
 
     const room = await this.getRoomWithOtherUser(
       currentUserId,
       otherUserId,
       true,
-      false
+      false,
     );
 
     return {
       isPrivateChat: false,
-      otherUser,
-      messages: room ? room.messages.map((message) => {
-        const isMe = message.senderId === currentUserId;
-        return { ...message, isMe };
-      }) : []
-    }
+      otherUser: {
+        ...otherUser,
+        image_src: squarizeImage(otherUser.image_src, this.BASE_IMAGE_SIZE),
+      },
+      messages: room
+        ? room.messages.map((message) => {
+            const isMe = message.senderId === currentUserId;
+            return { ...message, isMe };
+          })
+        : [],
+    };
+  }
+  // FIXME: dev only
+  async clearChat(currentUserId: string, otherUserId: string) {
+    const { id: roomId } = await this.getRoomWithOtherUser(
+      currentUserId,
+      otherUserId,
+    );
+    await this.deleteRoom(roomId);
+    return true;
   }
 }

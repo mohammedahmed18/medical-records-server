@@ -20,7 +20,24 @@ import { DoctorRequestModule } from './doctorRequests/DoctorRequest.module';
 import { OpenAIModule } from './openai/openai.module';
 import { CLIENT_URL } from './constants';
 
+function getTokenFromCookie(cookie: string) {
+  if (!cookie) return null;
+  const pairs = cookie.split(';');
+  let token = null;
 
+  for (let i = 0; i < pairs.length; i++) {
+    const pair = pairs[i].trim().split('=');
+    const key = pair[0];
+    const value = pair[1];
+
+    if (key === 'token') {
+      token = value;
+      break;
+    }
+  }
+
+  return token;
+}
 @Module({
   imports: [
     DatabaseModule,
@@ -41,28 +58,66 @@ import { CLIENT_URL } from './constants';
       persistedQueries: false,
       resolvers: { DateTime: GraphQLDateTime },
       installSubscriptionHandlers: true,
-      cors:{
+      context: (params) => {
+        const subReq = params?.extra?.request;
+        const req = subReq || params.req;
+
+        const cookie = req.headers?.cookie;
+
+        const accessToken = getTokenFromCookie(cookie);
+
+        const headers = subReq
+          ? {
+              ...subReq.headers,
+              authorization: accessToken ? 'Bearer ' + accessToken : null,
+            }
+          : params.req.headers;
+
+        return {
+          ...params,
+          req: {
+            ...req,
+            headers,
+          },
+        };
+      },
+      cors: {
         origin: CLIENT_URL,
         credentials: true,
       },
       subscriptions: {
-        'graphql-ws': true,
         'subscriptions-transport-ws': {
           onConnect: (headersRaw: Record<string, unknown>) => {
-              // Lowercase each header key
-              const headers = Object.keys(headersRaw).reduce((dest, key) => {
-                  dest[key.toLowerCase()] = headersRaw[key];
-                  return dest;
-              }, {});
-              return {
-                  req: {
-                      headers: headers,
-                  },
-              };
+            // Lowercase each header key
+            const headers = Object.keys(headersRaw).reduce((dest, key) => {
+              dest[key.toLowerCase()] = headersRaw[key];
+              return dest;
+            }, {});
+            return {
+              req: {
+                headers,
+              },
+            };
           },
+        },
+        'graphql-ws': {
+          onConnect: (connectionParams: { [key: string]: any }) => {
+            const req = connectionParams.extra.request;
+            const headersRaw = req.headers;
+            // Lowercase each header key
+            const headers = Object.keys(headersRaw).reduce((dest, key) => {
+              dest[key.toLowerCase()] = headersRaw[key];
+              return dest;
+            }, {});
+            return {
+              req: {
+                ...req,
+                headers,
+              },
+            };
+          },
+        },
       },
-      },
-
     }),
     ChatModule,
     AdminModule,

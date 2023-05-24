@@ -1,33 +1,29 @@
-import { Field, ObjectType } from "@nestjs/graphql"
-import { LastMessageType } from "./message.schema"
-
-
+import { Field, ObjectType } from '@nestjs/graphql';
+import { LastMessageType } from './message.schema';
 
 @ObjectType()
-class RoomUserType {
-    @Field()
-    id : string
-  
-    @Field()
-    name : string
+export class RoomUserType {
+  @Field()
+  id: string;
 
-    @Field({nullable : true})
-    image_src? : string
+  @Field()
+  name: string;
+
+  @Field({ nullable: true })
+  image_src?: string;
 }
-
 
 @ObjectType()
 export class RoomType {
-    @Field()
-    id : string
+  @Field()
+  id: string;
 
-    @Field(() => LastMessageType)
-    lastMessage : LastMessageType
+  @Field(() => LastMessageType)
+  lastMessage: LastMessageType;
 
-    @Field(() => RoomUserType)
-    otherUser : RoomUserType
+  @Field(() => RoomUserType)
+  otherUser: RoomUserType;
 
-    @Field() //test
-    lastMessageTimestamp : string
-
+  @Field() //test
+  lastMessageTimestamp: string;
 }

@@ -1,16 +1,14 @@
-import { Field, InputType } from "@nestjs/graphql";
-import { MessageKinds } from "../enums.schema";
+import { Field, InputType } from '@nestjs/graphql';
+import { MessageKinds } from '../enums.schema';
 
 @InputType()
-export class CreateMessageInputType{
+export class CreateMessageInputType {
+  @Field(() => MessageKinds, { nullable: true })
+  type?: MessageKinds;
 
-    @Field(() => MessageKinds ,{ nullable: true })
-    type?  : MessageKinds
+  @Field()
+  value: string;
 
-    @Field()
-    value : string
-
-    @Field()
-    toId : string
-
+  @Field()
+  toId: string;
 }
