@@ -8,6 +8,7 @@ import { CacheService } from './cache.service';
     CacheModule.register<RedisClientOptions>({
       store: redisStore,
       url: process.env.REDIS_URL,
+      ttl: 259200, // 3 hours
     }),
   ],
   providers: [CacheService],

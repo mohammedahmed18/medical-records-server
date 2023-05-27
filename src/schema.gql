@@ -144,6 +144,7 @@ input CreateUserInput {
   avg_monthly_income: Float
   weight: String
   height_cm: Float
+  medicalSpecialization: MedicalSpecialization
   maritalStatusId: Int!
   educationalLevelId: Int!
   employmentStatusId: Int!

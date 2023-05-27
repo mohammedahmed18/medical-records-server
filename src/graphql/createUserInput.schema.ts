@@ -1,5 +1,5 @@
 import { Field, Float, InputType, Int } from '@nestjs/graphql';
-import { Gender } from './enums.schema';
+import { Gender, MedicalSpecialization } from './enums.schema';
 
 @InputType()
 export class CreateUserInput {
@@ -27,6 +27,9 @@ export class CreateUserInput {
 
   @Field(() => Float, { nullable: true })
   height_cm?: number | null;
+
+  @Field(() => MedicalSpecialization, { nullable: true })
+  medicalSpecialization?: keyof typeof MedicalSpecialization;
 
   // image_src?: string
   @Field(() => Int)

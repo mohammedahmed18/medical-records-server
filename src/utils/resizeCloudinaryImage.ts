@@ -1,3 +1,6 @@
+import { CLIENT_URL } from 'src/constants';
+import isProd from './isProd';
+
 type ResizeOptions = {
   square?: boolean;
   size?: number;
@@ -9,6 +12,11 @@ export function resizeCloudinaryImage(
   options: ResizeOptions,
 ): string {
   if (!url) return null;
+
+  // web client image , ex: /images/some-image.jpg
+  if (!url.includes('http') && !url.includes('https'))
+    return isProd ? `${CLIENT_URL + url}` : url;
+
   const parts = url.split('/');
   const uploadIndex = parts.findIndex((part) => part === 'upload');
 

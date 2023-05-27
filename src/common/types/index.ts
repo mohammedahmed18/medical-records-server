@@ -25,3 +25,6 @@ export type CustomErrorOptions = {
   statusCode?: HttpStatus;
   errorCode?: string;
 };
+export type CachedUserInfo = {
+  image_src: string;
+};
