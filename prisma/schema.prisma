@@ -132,7 +132,35 @@ model User {
   messages             Message[]
   doctorRequests       DoctorRequest[]
 
+  DoctorData     DoctorData?
+  WrittenReviews Rating[]    @relation("reviewer_rating_FK") // theses are the ratings performed by the user
+  Ratings        Rating[]    @relation("doctor_rating_FK") // theses are the ratings for the doctors
+
   @@map("users")
+}
+
+model Rating {
+  id String @id @default(uuid())
+
+  doctor   User?   @relation(fields: [doctorId], references: [id], name: "doctor_rating_FK")
+  doctorId String?
+
+  reviewer   User    @relation(fields: [reviewerId], references: [id], name: "reviewer_rating_FK")
+  reviewerId String
+  rating     Float
+  comment    String?
+
+  createdAt DateTime @default(now())
+  // updatedAt DateTime @updatedAt
+}
+
+model DoctorData {
+  id String @id @default(uuid())
+
+  user           User    @relation(fields: [userId], references: [id])
+  userId         String  @unique
+  hasChatEnabled Boolean @default(true)
+  totalRating    Float
 }
 
 model Admin {

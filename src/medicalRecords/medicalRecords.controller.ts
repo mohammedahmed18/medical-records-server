@@ -17,13 +17,19 @@ export class MedicalRecordsController {
     @getCurrentUser('id') userId,
     @Query() body: getMedicalRecordsArgs,
   ) {
-    return this.medicalRecordsService.getUserMedicalRecords(userId, body);
+    return this.medicalRecordsService.getUserMedicalRecords(userId, {
+      ...body,
+      doctor: true,
+    });
   }
 
   @Post()
   @UseValidation(createMedicalRecordSchema)
   @Doctor()
-  async createMedicalRecord(@getCurrentUser("id") doctorId : string , @Body() data : CreateUserMedicalRecordInput){
-    return this.medicalRecordsService.createUserMedicalRecord(doctorId , data);
+  async createMedicalRecord(
+    @getCurrentUser('id') doctorId: string,
+    @Body() data: CreateUserMedicalRecordInput,
+  ) {
+    return this.medicalRecordsService.createUserMedicalRecord(doctorId, data);
   }
 }

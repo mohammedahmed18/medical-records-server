@@ -18,7 +18,7 @@ export class ChatService {
     private readonly userService: UsersService,
   ) {}
 
-  BASE_IMAGE_SIZE = 300
+  BASE_IMAGE_SIZE = 300;
   private async getUserRooms(userId) {
     return this.prisma.room.findMany({
       where: {
@@ -89,7 +89,10 @@ export class ChatService {
           ...room,
           otherUser: {
             ...otherUser,
-            image_src: squarizeImage(otherUser?.image_src , this.BASE_IMAGE_SIZE)
+            image_src: squarizeImage(
+              otherUser?.image_src,
+              this.BASE_IMAGE_SIZE,
+            ),
           },
         };
       }),
@@ -148,9 +151,9 @@ export class ChatService {
     withMessages = false,
     createRoom = true,
   ) {
-    if(currentUserId === otherUserId){
+    if (currentUserId === otherUserId) {
       //private room
-      return await this.getPrivateRoom(currentUserId, withMessages ,createRoom)
+      return await this.getPrivateRoom(currentUserId, withMessages, createRoom);
     }
     let room = await this.prisma.room.findFirst({
       where: { users: { array_contains: [currentUserId, otherUserId] } },
@@ -175,10 +178,10 @@ export class ChatService {
   async sendMessage(
     currentUser,
     createMessageInput: CreateMessageInputType,
-    pubSub: PubSub,
+    pubSub,
   ): Promise<MessageSentType> {
     const { toId, type, value } = createMessageInput;
-    const {id , name , image_src} = currentUser
+    const { id, name, image_src } = currentUser;
     const isPrivate = id === toId;
 
     const room = isPrivate
@@ -212,7 +215,7 @@ export class ChatService {
       sentUser: {
         id,
         name,
-        image_src: squarizeImage(image_src , this.BASE_IMAGE_SIZE)
+        image_src: squarizeImage(image_src, this.BASE_IMAGE_SIZE),
       },
     };
     pubSub.publish(MESSAGE_SENT, sentMessage);
@@ -254,7 +257,7 @@ export class ChatService {
       isPrivateChat: false,
       otherUser: {
         ...otherUser,
-        image_src: squarizeImage(otherUser.image_src , this.BASE_IMAGE_SIZE),
+        image_src: squarizeImage(otherUser.image_src, this.BASE_IMAGE_SIZE),
       },
       messages: room
         ? room.messages.map((message) => {
@@ -265,9 +268,12 @@ export class ChatService {
     };
   }
   // FIXME: dev only
-  async clearChat(currentUserId: string , otherUserId: string){
-    const {id: roomId} = await this.getRoomWithOtherUser(currentUserId ,otherUserId);
+  async clearChat(currentUserId: string, otherUserId: string) {
+    const { id: roomId } = await this.getRoomWithOtherUser(
+      currentUserId,
+      otherUserId,
+    );
     await this.deleteRoom(roomId);
-    return true
+    return true;
   }
 }

@@ -1,3 +1,4 @@
+import { Prisma } from '@prisma/client';
 import { MedicalRecordsActionTypes, MedicalSpecialization } from 'src/graphql';
 
 export type getMedicalRecordsArgs = {
@@ -7,10 +8,11 @@ export type getMedicalRecordsArgs = {
   actionType?: keyof typeof MedicalRecordsActionTypes;
 };
 
-
 export type getDoctorsOptions = {
-  perPage : string
-  cursor : string
-  search: string
-  medicalSpecialization ? : keyof typeof MedicalSpecialization
-}
+  perPage: string;
+  cursor: string;
+  search: string;
+  medicalSpecialization?: keyof typeof MedicalSpecialization;
+  topRated?: Prisma.SortOrder;
+  mostReviews?: Prisma.SortOrder;
+};

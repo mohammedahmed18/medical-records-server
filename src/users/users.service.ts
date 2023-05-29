@@ -208,6 +208,8 @@ export class UsersService {
     const token = await this.jwt.signAsync(
       {
         nationalId: user.nationalId,
+        id: user.id,
+        name: user.name,
       },
       {
         secret: this.config.get('QR_SECRET'),

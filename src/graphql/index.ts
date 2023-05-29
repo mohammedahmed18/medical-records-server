@@ -7,3 +7,4 @@ export * from './createUserMedicalRecordInput.schema';
 export * from './chat/message.schema';
 export * from './chat/room.schema';
 export * from './chat/CreateMessageInputType.schema';
+export * from './reviews.schema';

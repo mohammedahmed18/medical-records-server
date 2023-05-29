@@ -17,24 +17,32 @@ export class MedicalRecordsService {
       where: whereCriteria,
       take: options.take ? parseInt(options.take) : undefined,
       skip: options.skip ? parseInt(options.skip) : undefined,
-      include: {
-        doctor: { select: DOCTOR_SELECT_FIELDS },
-      },
+      include: options.doctor
+        ? {
+            doctor: { select: DOCTOR_SELECT_FIELDS },
+          }
+        : null,
       orderBy: { createdAt: 'desc' },
     });
     return records;
   }
 
-  async createUserMedicalRecord(doctorId : string , inputData : CreateUserMedicalRecordInput){
-    if(inputData.userId === doctorId && isProd) throw new BadRequestException("you can't create medical record for yourself")
+  async createUserMedicalRecord(
+    doctorId: string,
+    inputData: CreateUserMedicalRecordInput,
+  ) {
+    if (inputData.userId === doctorId && isProd)
+      throw new BadRequestException(
+        "you can't create medical record for yourself",
+      );
     const medicalRecord = this.prisma.medical_Record.create({
-      data : {
+      data: {
         doctorId,
         ...inputData,
-        details : inputData.details || []
+        details: inputData.details || [],
       },
     });
-  
-    return medicalRecord
+
+    return medicalRecord;
   }
 }
