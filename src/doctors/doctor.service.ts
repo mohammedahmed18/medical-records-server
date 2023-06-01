@@ -5,12 +5,12 @@ import {
 } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
 import { CustomError } from 'src/common/errors';
-import { SCAN_YOUR_SELF_ERR_CODE } from 'src/constants';
+import { BASE_IMAGE_SIZE, SCAN_YOUR_SELF_ERR_CODE } from 'src/constants';
 import { PrismaService } from 'src/database/prisma.service';
 import { CreateReviewInput, MedicalSpecialization } from 'src/graphql';
 import { getDoctorsOptions } from 'src/medicalRecords/types';
 import { UsersService } from 'src/users/users.service';
-import { resizeCloudinaryImage } from 'src/utils/resizeCloudinaryImage';
+import { squarizeImage } from 'src/utils/resizeCloudinaryImage';
 
 @Injectable()
 export class DoctorService {
@@ -116,10 +116,7 @@ export class DoctorService {
         return {
           ...doctor,
           DoctorData,
-          image_src: resizeCloudinaryImage(doctor.image_src, {
-            square: true,
-            size: 400,
-          }),
+          image_src: squarizeImage(doctor.image_src, BASE_IMAGE_SIZE),
         };
       }),
     );

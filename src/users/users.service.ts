@@ -6,13 +6,13 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import * as argon from 'argon2';
-import { PUBLIC_FIELDS } from 'src/constants';
+import { BASE_IMAGE_SIZE, PUBLIC_FIELDS } from 'src/constants';
 import { MedicalSpecialization, Prisma } from '@prisma/client';
 import { Gender, UserProfile, User } from 'src/graphql';
 import { CreateUserInput } from 'src/graphql/createUserInput.schema';
 import { CloudinaryService } from 'src/cloudinary/cloudinary.service';
 import { ConfigService } from '@nestjs/config';
-import { resizeCloudinaryImage } from 'src/utils/resizeCloudinaryImage';
+import { squarizeImage } from 'src/utils/resizeCloudinaryImage';
 import { CacheService } from 'src/redis/cache.service';
 import { getUserCachedInfo } from 'src/utils/cacheKeys';
 import { CachedUserInfo } from 'src/common/types';
@@ -146,10 +146,7 @@ export class UsersService {
     userProfile.employmentStatus = user.employmentStatus.label;
     userProfile.maritalStatus = user.maritalStatus.label;
     userProfile.educationalLevel = user.educationalLevel.label;
-    userProfile.image_src = resizeCloudinaryImage(user.image_src, {
-      square: true,
-      size: 800,
-    });
+    userProfile.image_src = squarizeImage(user.image_src, BASE_IMAGE_SIZE);
     return userProfile;
   }
 

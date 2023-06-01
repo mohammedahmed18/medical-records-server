@@ -3,9 +3,11 @@ import { ConfigService } from '@nestjs/config';
 import { PassportStrategy } from '@nestjs/passport';
 import { ExtractJwt, Strategy } from 'passport-jwt';
 import { CachedUserInfo, JwtPayload } from 'src/common/types';
+import { BASE_IMAGE_SIZE } from 'src/constants';
 import { CacheService } from 'src/redis/cache.service';
 import { UsersService } from 'src/users/users.service';
 import { getUserCachedInfo } from 'src/utils/cacheKeys';
+import { squarizeImage } from 'src/utils/resizeCloudinaryImage';
 
 @Injectable()
 export class AtStrategy extends PassportStrategy(Strategy, 'jwt') {
@@ -39,8 +41,12 @@ export class AtStrategy extends PassportStrategy(Strategy, 'jwt') {
       const user = await this.userService.findById(payload.id, {
         image_src: true,
       });
-      await this.cache.set(userCacheKey, user);
-      cachedInfo = { image_src: user.image_src };
+      const modifiedUser = {
+        ...user,
+        image_src: squarizeImage(user.image_src, BASE_IMAGE_SIZE),
+      };
+      await this.cache.set(userCacheKey, modifiedUser);
+      cachedInfo = { ...modifiedUser };
     }
 
     Object.keys(payload).forEach((key) => {

@@ -1,4 +1,3 @@
-import { PubSub } from 'graphql-subscriptions';
 import { Injectable } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
 import { PrismaService } from 'src/database/prisma.service';
@@ -9,7 +8,7 @@ import {
 } from 'src/graphql';
 import { UsersService } from 'src/users/users.service';
 import { squarizeImage } from 'src/utils/resizeCloudinaryImage';
-import { MESSAGE_SENT } from 'src/constants';
+import { BASE_IMAGE_SIZE, MESSAGE_SENT } from 'src/constants';
 
 @Injectable()
 export class ChatService {
@@ -18,7 +17,6 @@ export class ChatService {
     private readonly userService: UsersService,
   ) {}
 
-  BASE_IMAGE_SIZE = 300;
   private async getUserRooms(userId) {
     return this.prisma.room.findMany({
       where: {
@@ -87,12 +85,10 @@ export class ChatService {
 
         return {
           ...room,
+          isPrivate: privateChat,
           otherUser: {
             ...otherUser,
-            image_src: squarizeImage(
-              otherUser?.image_src,
-              this.BASE_IMAGE_SIZE,
-            ),
+            image_src: squarizeImage(otherUser.image_src, BASE_IMAGE_SIZE),
           },
         };
       }),
@@ -215,10 +211,11 @@ export class ChatService {
       sentUser: {
         id,
         name,
-        image_src: squarizeImage(image_src, this.BASE_IMAGE_SIZE),
+        image_src: squarizeImage(image_src, BASE_IMAGE_SIZE),
       },
     };
-    pubSub.publish(MESSAGE_SENT, sentMessage);
+
+    if (!isPrivate) pubSub.publish(MESSAGE_SENT, sentMessage);
 
     return sentMessage;
   }
@@ -241,7 +238,10 @@ export class ChatService {
       const messages = myPrivateRoom?.messages || [];
       return {
         isPrivateChat: true,
-        otherUser: { ...otherUser },
+        otherUser: {
+          ...otherUser,
+          image_src: squarizeImage(otherUser.image_src, BASE_IMAGE_SIZE),
+        },
         messages: messages.map((m) => ({ ...m, isMe: true })), //isMe will always be true in private chat
       };
     }
@@ -257,7 +257,7 @@ export class ChatService {
       isPrivateChat: false,
       otherUser: {
         ...otherUser,
-        image_src: squarizeImage(otherUser.image_src, this.BASE_IMAGE_SIZE),
+        image_src: squarizeImage(otherUser.image_src, BASE_IMAGE_SIZE),
       },
       messages: room
         ? room.messages.map((message) => {

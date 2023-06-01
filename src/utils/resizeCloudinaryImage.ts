@@ -17,6 +17,9 @@ export function resizeCloudinaryImage(
   if (!url.includes('http') && !url.includes('https'))
     return isProd ? `${CLIENT_URL + url}` : url;
 
+  // normal image : not cloudinary one, don't re
+  if (!url.includes('res.cloudinary.com')) return url;
+
   const parts = url.split('/');
   const uploadIndex = parts.findIndex((part) => part === 'upload');
 
