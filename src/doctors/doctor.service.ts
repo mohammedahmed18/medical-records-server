@@ -44,14 +44,8 @@ export class DoctorService {
   }
 
   async getAllDoctors(options: getDoctorsOptions) {
-    const {
-      medicalSpecialization,
-      cursor,
-      perPage,
-      search,
-      topRated,
-      mostReviews,
-    } = options;
+    const { medicalSpecialization, cursor, perPage, q, topRated, mostReviews } =
+      options;
     if (
       medicalSpecialization &&
       !Object.keys(MedicalSpecialization).includes(medicalSpecialization)
@@ -85,7 +79,7 @@ export class DoctorService {
       where: {
         NOT: { medicalSpecialization: null },
         medicalSpecialization: options.medicalSpecialization,
-        name: { contains: search, mode: 'insensitive' },
+        name: { contains: q, mode: 'insensitive' },
       },
       take: perPage ? parseInt(perPage) : undefined,
       skip: cursor ? 1 : undefined,

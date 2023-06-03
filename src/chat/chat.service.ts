@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
 import { PrismaService } from 'src/database/prisma.service';
 import {
@@ -8,7 +8,12 @@ import {
 } from 'src/graphql';
 import { UsersService } from 'src/users/users.service';
 import { squarizeImage } from 'src/utils/resizeCloudinaryImage';
-import { BASE_IMAGE_SIZE, MESSAGE_SENT } from 'src/constants';
+import {
+  BASE_IMAGE_SIZE,
+  CHAT_USER_NOT_FOUND,
+  MESSAGE_SENT,
+} from 'src/constants';
+import { CustomError } from 'src/common/errors';
 
 @Injectable()
 export class ChatService {
@@ -227,6 +232,12 @@ export class ChatService {
       image_src: true,
       medicalSpecialization: true,
     });
+    if (!otherUser)
+      throw new CustomError({
+        message: 'user not found',
+        errorCode: CHAT_USER_NOT_FOUND,
+        statusCode: 404,
+      });
     if (currentUserId === otherUserId) {
       // get my private chat
       const myPrivateRoom = await this.getPrivateRoom(

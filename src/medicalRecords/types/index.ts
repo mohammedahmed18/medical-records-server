@@ -11,7 +11,7 @@ export type getMedicalRecordsArgs = {
 export type getDoctorsOptions = {
   perPage: string;
   cursor: string;
-  search: string;
+  q: string;
   medicalSpecialization?: keyof typeof MedicalSpecialization;
   topRated?: Prisma.SortOrder;
   mostReviews?: Prisma.SortOrder;
