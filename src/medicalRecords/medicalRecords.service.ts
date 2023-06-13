@@ -10,6 +10,8 @@ export class MedicalRecordsService {
   constructor(private prisma: PrismaService) {}
 
   async getUserMedicalRecords(userId: string, options: getMedicalRecordsArgs) {
+    console.log(options);
+
     const whereCriteria = { userId };
     if (options.actionType) whereCriteria['actionType'] = options.actionType;
     // TODO: options.doctor
@@ -17,11 +19,12 @@ export class MedicalRecordsService {
       where: whereCriteria,
       take: options.take ? parseInt(options.take) : undefined,
       skip: options.skip ? parseInt(options.skip) : undefined,
-      include: options.doctor
-        ? {
-            doctor: { select: DOCTOR_SELECT_FIELDS },
-          }
-        : null,
+      include:
+        options.doctor !== 'false'
+          ? {
+              doctor: { select: DOCTOR_SELECT_FIELDS },
+            }
+          : null,
       orderBy: { createdAt: 'desc' },
     });
     return records;

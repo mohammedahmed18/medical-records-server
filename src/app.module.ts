@@ -21,7 +21,7 @@ import { OpenAIModule } from './openai/openai.module';
 import { CLIENT_URL } from './constants';
 
 function getTokenFromCookie(cookie: string) {
-  if(!cookie) return null
+  if (!cookie) return null;
   const pairs = cookie.split(';');
   let token = null;
 
@@ -48,11 +48,12 @@ function getTokenFromCookie(cookie: string) {
     DoctorRequestModule,
     MedicalRecordsModule,
     OpenAIModule,
+    ChatModule,
+    AdminModule,
     ConfigModule.forRoot({ isGlobal: true }),
     GraphQLModule.forRoot<ApolloDriverConfig>({
       driver: ApolloDriver,
       debug: process.env.NODE_ENV === 'development',
-      playground: true,
       autoSchemaFile: join(process.cwd(), 'src/schema.gql'),
       introspection: true,
       persistedQueries: false,
@@ -64,21 +65,20 @@ function getTokenFromCookie(cookie: string) {
 
         const cookie = req.headers?.cookie;
 
-        const accessToken = getTokenFromCookie(cookie)
-        
+        const accessToken = getTokenFromCookie(cookie);
+
         const headers = subReq
           ? {
               ...subReq.headers,
-              authorization: accessToken ?
-                'Bearer ' + accessToken : null,
+              authorization: accessToken ? 'Bearer ' + accessToken : null,
             }
           : params.req.headers;
 
-
         return {
           ...params,
-          req : {
-            ...req , headers
+          req: {
+            ...req,
+            headers,
           },
         };
       },
@@ -120,8 +120,6 @@ function getTokenFromCookie(cookie: string) {
         },
       },
     }),
-    ChatModule,
-    AdminModule,
   ],
   controllers: [AppController],
   providers: [

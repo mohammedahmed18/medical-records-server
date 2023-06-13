@@ -17,10 +17,7 @@ export class MedicalRecordsController {
     @getCurrentUser('id') userId,
     @Query() body: getMedicalRecordsArgs,
   ) {
-    return this.medicalRecordsService.getUserMedicalRecords(userId, {
-      ...body,
-      doctor: true,
-    });
+    return this.medicalRecordsService.getUserMedicalRecords(userId, body);
   }
 
   @Post()

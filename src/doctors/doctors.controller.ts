@@ -45,7 +45,7 @@ export class DoctorsController {
   //TODO: filter by action types
   async readMedicalRecords(@getQrPatientId() patientId) {
     return this.medicalRecordsService.getUserMedicalRecords(patientId, {
-      doctor: false,
+      doctor: 'false',
     });
   }
 
