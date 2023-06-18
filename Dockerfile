@@ -85,9 +85,8 @@ COPY . .
 RUN npx prisma generate && npx prisma db push
 
 RUN npm run build
-
 RUN echo 'vm.overcommit_memory = 1' >> /etc/sysctl.conf
 
 EXPOSE 3000
 
-CMD ["service" , "redis-server start" , "&&" ,  "npm" , "start"]
+CMD service redis-server start && npm start
