@@ -82,12 +82,13 @@ RUN apt-get update \
 
 COPY . .
 
-RUN npx prisma generate
+RUN npx prisma generate && npx prisma db push
 
-RUN npm run build
+RUN npm run build \
+&& service postgresql start && service redis-server start
 
 RUN echo 'vm.overcommit_memory = 1' >> /etc/sysctl.conf
 
 EXPOSE 3000
 
-CMD service postgresql start && service redis-server start && npx prisma db push && npm start
+CMD ["npm" , "start"]
