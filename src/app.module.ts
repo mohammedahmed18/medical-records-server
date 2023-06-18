@@ -19,6 +19,7 @@ import { GraphQLDateTime } from 'graphql-iso-date';
 import { DoctorRequestModule } from './doctorRequests/DoctorRequest.module';
 import { OpenAIModule } from './openai/openai.module';
 import { CLIENT_URL } from './constants';
+import { TensorflowModule } from './tensorflow/tensorflow.module';
 
 function getTokenFromCookie(cookie: string) {
   if (!cookie) return null;
@@ -40,6 +41,7 @@ function getTokenFromCookie(cookie: string) {
 }
 @Module({
   imports: [
+    TensorflowModule,
     DatabaseModule,
     RedisConfigModule,
     AuthModule,

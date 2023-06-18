@@ -12,7 +12,7 @@ services:
       - ./dbscripts/postgres:/docker-entrypoint-initdb.d
   cache:
     image: redis:6.2-alpine
-    restart: always
+    restart: unless-stopped
     container_name: medical-records-cache
     command: redis-server /usr/local/etc/redis/redis.conf
     ports:
