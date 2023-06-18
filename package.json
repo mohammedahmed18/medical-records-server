@@ -8,7 +8,7 @@
   "scripts": {
     "build": "nest build",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
-    "start": "pm2 start \"nest start\"",
+    "start": "pm2 start \"nest start\" --env production",
     "dev": "nest start --watch",
     "dev:old": "pm2 start \"pnpm dev\" --name medical-records-server",
     "prisma-studio": "npx prisma studio",
