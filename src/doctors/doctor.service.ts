@@ -4,10 +4,16 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
+import * as moment from 'moment';
+import { range } from 'lodash';
 import { CustomError } from 'src/common/errors';
 import { BASE_IMAGE_SIZE, SCAN_YOUR_SELF_ERR_CODE } from 'src/constants';
 import { PrismaService } from 'src/database/prisma.service';
-import { CreateReviewInput, MedicalSpecialization } from 'src/graphql';
+import {
+  CreateReviewInput,
+  MedicalRecordsActionTypes,
+  MedicalSpecialization,
+} from 'src/graphql';
 import { getDoctorsOptions } from 'src/medicalRecords/types';
 import { UsersService } from 'src/users/users.service';
 import { squarizeImage } from 'src/utils/resizeCloudinaryImage';
@@ -117,11 +123,27 @@ export class DoctorService {
   }
 
   async getDoctor(doctorId: string) {
-    const doctor = this.userService.findById(doctorId, {
+    // get the history of written records of the past year
+    const startDate = moment().subtract(1, 'year');
+    const endDate = moment();
+
+    const doctor = await this.userService.findById(doctorId, {
       name: true,
       image_src: true,
       medicalSpecialization: true,
       email: true,
+      writtenMedicalRecors: {
+        select: {
+          actionType: true,
+          createdAt: true,
+        },
+        where: {
+          createdAt: {
+            gte: startDate.toDate(),
+            lte: endDate.toDate(),
+          },
+        },
+      },
       DoctorData: {
         select: {
           totalRating: true,
@@ -133,7 +155,39 @@ export class DoctorService {
 
     if (!doctor) throw new NotFoundException('No user found');
 
-    return doctor;
+    const report = [];
+    const beforeMonthsNumber = 12;
+    range(beforeMonthsNumber).forEach((num) => {
+      const monthNum = num + 1;
+      const monthsAgo = beforeMonthsNumber - monthNum;
+      const dueDate = moment().subtract(monthsAgo, 'M');
+
+      const formattedDate = dueDate.format('MMM YYYY');
+
+      const recordsThisMonth = doctor.writtenMedicalRecors.filter((record) => {
+        // records created this current month
+        return (
+          moment(record.createdAt).isSame(dueDate, 'M') &&
+          moment(record.createdAt).isSame(dueDate, 'y')
+        );
+      });
+
+      const baseRecordsActionsAnalytics = Object.keys(
+        MedicalRecordsActionTypes,
+      ).reduce((acc, type) => {
+        return { ...acc, [type]: 0 };
+      }, {});
+
+      report.push({
+        name: formattedDate,
+        ...baseRecordsActionsAnalytics,
+        ...this.groupBy(recordsThisMonth, 'actionType'),
+      });
+    });
+
+    delete doctor.writtenMedicalRecors;
+    doctor.image_src = squarizeImage(doctor.image_src, 200);
+    return { ...doctor, report };
   }
 
   async getDoctorRatings(doctorId: string) {
@@ -144,8 +198,10 @@ export class DoctorService {
         medicalSpecialization: true,
         Ratings: {
           select: {
+            id: true,
             comment: true,
             rating: true,
+            createdAt: true,
             reviewer: {
               select: {
                 image_src: true,
@@ -207,5 +263,16 @@ export class DoctorService {
     // update the totalRating without blocking
     setTimeout(() => this.updateTotalRating(data.doctorId), 4000);
     return review;
+  }
+
+  private groupBy(arr: any[], key: string) {
+    const groups = {};
+
+    arr.forEach((item) => {
+      if (!groups[item[key]]) groups[item[key]] = 1;
+      else groups[item[key]] = groups[item[key]] + 1;
+    });
+
+    return groups;
   }
 }
