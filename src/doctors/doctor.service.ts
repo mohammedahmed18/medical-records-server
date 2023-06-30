@@ -197,6 +197,7 @@ export class DoctorService {
       select: {
         medicalSpecialization: true,
         Ratings: {
+          orderBy: { createdAt: 'desc' },
           select: {
             id: true,
             comment: true,
