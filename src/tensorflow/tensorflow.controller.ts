@@ -6,6 +6,9 @@ import { AiTests } from './aiTests';
 export class TensorflowController {
   @Get('models')
   getAllAiTests() {
-    return AiTests;
+    return AiTests.map((test) => {
+      delete test.modelPath;
+      return test;
+    });
   }
 }

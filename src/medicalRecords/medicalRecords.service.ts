@@ -10,8 +10,6 @@ export class MedicalRecordsService {
   constructor(private prisma: PrismaService) {}
 
   async getUserMedicalRecords(userId: string, options: getMedicalRecordsArgs) {
-    console.log(options);
-
     const whereCriteria = { userId };
     if (options.actionType) whereCriteria['actionType'] = options.actionType;
     // TODO: options.doctor

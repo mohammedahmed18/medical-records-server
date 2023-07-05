@@ -7,7 +7,11 @@ import { Prisma } from '@prisma/client';
 import * as moment from 'moment';
 import { range } from 'lodash';
 import { CustomError } from 'src/common/errors';
-import { BASE_IMAGE_SIZE, SCAN_YOUR_SELF_ERR_CODE } from 'src/constants';
+import {
+  BASE_IMAGE_SIZE,
+  SCAN_YOUR_SELF_ERR_CODE,
+  USER_IS_NOT_A_DOCTOR,
+} from 'src/constants';
 import { PrismaService } from 'src/database/prisma.service';
 import {
   CreateReviewInput,
@@ -155,6 +159,12 @@ export class DoctorService {
 
     if (!doctor) throw new NotFoundException('No user found');
 
+    if (!doctor.medicalSpecialization)
+      throw new CustomError({
+        message: 'this user is not a doctor',
+        statusCode: 400,
+        errorCode: USER_IS_NOT_A_DOCTOR,
+      });
     const report = [];
     const beforeMonthsNumber = 12;
     range(beforeMonthsNumber).forEach((num) => {
@@ -214,8 +224,7 @@ export class DoctorService {
       },
     });
 
-    if (!user || !user.medicalSpecialization)
-      throw new NotFoundException('doctor not found');
+    if (!user) throw new NotFoundException('doctor not found');
     return user.Ratings;
   }
 

@@ -17,3 +17,4 @@ export const INVALID_TOKEN = 'P__xe04500';
 export const INVALID_QR_CODE = 'P__ee05557';
 export const SCAN_YOUR_SELF_ERR_CODE = 'S__yy2';
 export const CHAT_USER_NOT_FOUND = 'P__e04558';
+export const USER_IS_NOT_A_DOCTOR = 'P__e04559';

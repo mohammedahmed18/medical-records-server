@@ -10,8 +10,7 @@ export class AtGuard extends AuthGuard('jwt') {
     super();
   }
 
-
-   canActivate(context: ExecutionContext) {
+  canActivate(context: ExecutionContext) {
     const isPublic = this.reflector.getAllAndOverride<boolean>('isPublic', [
       context.getHandler(),
       context.getClass(),
@@ -19,11 +18,13 @@ export class AtGuard extends AuthGuard('jwt') {
     if (isPublic) {
       return true;
     }
-  
-    return GraphQlUtils.isGraphQl(context) ? this.canActivateGraphQL(context) : super.canActivate(context);
+
+    return GraphQlUtils.isGraphQl(context)
+      ? this.canActivateGraphQL(context)
+      : super.canActivate(context);
   }
-  canActivateGraphQL(context : ExecutionContext){
-    const {req , args} = GraphQlUtils.getGraphQlContextParams(context)
+  canActivateGraphQL(context: ExecutionContext) {
+    const { req, args } = GraphQlUtils.getGraphQlContextParams(context);
     const { variables } = args;
     if (variables) {
       req.body = variables;
