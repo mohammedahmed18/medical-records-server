@@ -60,6 +60,7 @@ enum MedicalRecordsActionTypes {
   Generic
   Diagnosis
   Surgery
+  AI_TEST
   Birth
   Death
   Illness

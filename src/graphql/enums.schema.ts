@@ -56,11 +56,11 @@ export enum MedicalRecordsActionTypes {
   Illness = 'Illness',
   Allergy = 'Allergy',
   LabTest = 'LabTest',
+  AI_TEST = 'AI_TEST',
 }
 
-
-export enum MessageKinds{
-  text = "text",
-  image = "image",
-  medicalRecord = "medicalRecord"
+export enum MessageKinds {
+  text = 'text',
+  image = 'image',
+  medicalRecord = 'medicalRecord',
 }
