@@ -26,3 +26,9 @@ jobs:
         fi
     - name: Build the Docker image
       run: docker build . --file Dockerfile --tag medical-records-server
+    
+    - name: Log in to Docker Hub
+      run: docker login --username mohammed180 --password ${{ secrets.DOCKERHUB_PASSWORD }}
+
+    - name: Push the Docker image to Docker Hub
+      run: docker push mohammed180/medical-records-server:latest
