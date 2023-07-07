@@ -16,7 +16,7 @@ jobs:
 
     - name: Set up environment
       run: |
-        echo "DATABASE_URL=${{ secrets.DATABASE_URL }}" > .env
+        echo "DATABASE_URL=${{ secrets.DATABASE_URL }}" >> .env
         
     - name: Check environment variable
       run: |
