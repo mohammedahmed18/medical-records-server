@@ -4,7 +4,6 @@ import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import { LoginInputType } from 'src/graphql/admin';
 import { ADMIN_TOKEN_LIFETIME, error_msgs } from 'src/constants';
-import * as argon2 from 'argon2';
 
 @Injectable()
 export class AdminAuthService {
@@ -22,11 +21,12 @@ export class AdminAuthService {
     return await this.generateAdminToken(admin);
   }
 
-  async validate(credentials: LoginInputType) {
-    const { username, password } = credentials;
-    const admin = await this.adminService.findAdminByUsername(username);
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  async validate(_credentials: LoginInputType) {
+    // const { username, password } = credentials;
+    // const admin = await this.adminService.findAdminByUsername(username);
 
-    if (admin && (await argon2.verify(admin.password, password))) return admin;
+    // if (admin && (await argon2.verify(admin.password, password))) return admin;
 
     return null;
   }

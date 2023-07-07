@@ -38,7 +38,7 @@ export class AuthService {
   }
 
   async refresh(userId: string, refreshToken: string) {
-    const _user = await this.db.user.findFirst({ where: { id: userId } });
+    const _user = await this.userService.findById(userId);
 
     if (!_user || !_user.hashedRt)
       throw new ForbiddenException('Access Denied');
@@ -71,7 +71,9 @@ export class AuthService {
   // utilities
   async validate(credentials: UserLoginDto) {
     const { nationalId, password } = credentials;
-    const user = await this.userService.findByNationalId(nationalId);
+    const user = await this.userService.findByNationalId(nationalId, {
+      admin: true,
+    });
 
     if (user && (await argon2.verify(user.password, password))) return user;
 

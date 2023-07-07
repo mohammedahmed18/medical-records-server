@@ -21,7 +21,7 @@ import { OpenAIModule } from './openai/openai.module';
 import { CLIENT_URL } from './constants';
 import { TensorflowModule } from './tensorflow/tensorflow.module';
 
-function getTokenFromCookie(cookie: string) {
+export function getTokenFromCookie(cookie: string) {
   if (!cookie) return null;
   const pairs = cookie.split(';');
   let token = null;

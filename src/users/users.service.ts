@@ -6,7 +6,11 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import * as argon from 'argon2';
-import { BASE_IMAGE_SIZE, PUBLIC_FIELDS } from 'src/constants';
+import {
+  ALL_USER_FIRST_LEVEL_FIELDS,
+  BASE_IMAGE_SIZE,
+  PUBLIC_FIELDS,
+} from 'src/constants';
 import { MedicalSpecialization, Prisma } from '@prisma/client';
 import { Gender, UserProfile, User } from 'src/graphql';
 import { CreateUserInput } from 'src/graphql/createUserInput.schema';
@@ -27,11 +31,18 @@ export class UsersService {
     private jwt: JwtService,
   ) {}
 
-  async findById(userId: string, select: Prisma.UserSelect = null) {
+  async findById(
+    userId: string,
+    select: Prisma.UserSelect = ALL_USER_FIRST_LEVEL_FIELDS,
+    additionalSelect: Prisma.UserSelect = {},
+  ) {
     //TODO: use custom type for this to avoid any unpredicted prisma issues
     const user = await this.db.user.findFirst({
       where: { id: userId },
-      select,
+      select: {
+        ...select,
+        ...additionalSelect,
+      },
     });
     if (user) {
       return user;
@@ -39,10 +50,17 @@ export class UsersService {
     return null;
   }
 
-  async findByNationalId(nationalId: string, select: Prisma.UserSelect = null) {
+  async findByNationalId(
+    nationalId: string,
+    additionalSelect: Prisma.UserSelect = {},
+    select: Prisma.UserSelect = ALL_USER_FIRST_LEVEL_FIELDS,
+  ) {
     const user = await this.db.user.findFirst({
       where: { nationalId },
-      select,
+      select: {
+        ...select,
+        ...additionalSelect,
+      },
     });
     if (user) {
       return user;
@@ -151,7 +169,7 @@ export class UsersService {
   }
 
   async loggedInUserProfile(userId: string): Promise<Partial<UserProfile>> {
-    const user = await this.findById(userId, PUBLIC_FIELDS);
+    const user = await this.findById(userId, PUBLIC_FIELDS, { admin: true });
     if (!user) throw new NotFoundException('no user found');
     return this.mapUserToProfile(user);
   }

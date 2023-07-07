@@ -2,6 +2,10 @@ generator client {
   provider = "prisma-client-js"
 }
 
+generator erd {
+  provider = "prisma-erd-generator"
+}
+
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
@@ -169,9 +173,6 @@ model Admin {
 
   user   User   @relation(fields: [userId], references: [id])
   userId String @unique
-
-  username String
-  password String
 
   role                  Role            @relation(fields: [roleId], references: [id])
   roleId                String

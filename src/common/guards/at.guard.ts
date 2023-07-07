@@ -1,9 +1,10 @@
 import { GraphQlUtils } from './../../utils/graphqlUtils';
-import { ExecutionContext, Injectable, Logger } from '@nestjs/common';
+import { ExecutionContext, Injectable } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { ExecutionContextHost } from '@nestjs/core/helpers/execution-context-host';
 import { AuthGuard } from '@nestjs/passport';
-
+import { ContextUtils } from 'src/utils/contextUtils';
+import jwt_decode from 'jwt-decode';
 @Injectable()
 export class AtGuard extends AuthGuard('jwt') {
   constructor(private reflector: Reflector) {
@@ -15,8 +16,24 @@ export class AtGuard extends AuthGuard('jwt') {
       context.getHandler(),
       context.getClass(),
     ]);
+
     if (isPublic) {
       return true;
+    }
+
+    const isAdmin = this.reflector.getAllAndOverride<boolean>('isAdmin', [
+      context.getHandler(),
+      context.getClass(),
+    ]);
+
+    if (isAdmin) {
+      const req = ContextUtils.getRequest(context);
+
+      const accessToken = req.cookies?.token;
+
+      const decoded: any = jwt_decode(accessToken);
+      const isCurrentUserAdmin = !!decoded?.admin;
+      if (!isCurrentUserAdmin) return false;
     }
 
     return GraphQlUtils.isGraphQl(context)

@@ -1,4 +1,4 @@
-import { createUserSchema , makeDoctorSchema } from './validation-schemas';
+import { createUserSchema, makeDoctorSchema } from './validation-schemas';
 import { UsersService } from 'src/users/users.service';
 import {
   Controller,
@@ -11,7 +11,12 @@ import {
   UploadedFile,
   Param,
 } from '@nestjs/common';
-import { getCurrentUser, Public, UseValidation } from 'src/common/decorators';
+import {
+  Admin,
+  getCurrentUser,
+  Public,
+  UseValidation,
+} from 'src/common/decorators';
 import { USERS_BASE_URL } from 'src/constants';
 import { CacheService } from 'src/redis/cache.service';
 import { FileInterceptor } from '@nestjs/platform-express';
@@ -34,16 +39,20 @@ export class UsersController {
     return await this.usersService.createUser(data);
   }
   //   FIXME: note this is only for testing remove it when the project is done
-  @Post("make-doctor")
+  @Post('make-doctor')
   @UseValidation(makeDoctorSchema)
   @Public()
   async makeDoctor(@Body() body) {
-    return await this.usersService.makeDoctor(body.nationalId, body.medicalSpecialization);
+    return await this.usersService.makeDoctor(
+      body.nationalId,
+      body.medicalSpecialization,
+    );
   }
 
   //   FIXME: note this is only for testing remove it when the project is done
   @Get()
-  @Public()
+  @Admin()
+  // @Public()
   async getUsers(@Body() body) {
     return await this.usersService.getAll(body.take, body.skip);
   }
@@ -54,7 +63,7 @@ export class UsersController {
   }
 
   @Get('/:userId')
-  async getUserDetailsForOtherUsers(@Param("userId") userId) {
+  async getUserDetailsForOtherUsers(@Param('userId') userId) {
     return await this.usersService.getUserDetailsForOtherUsers(userId);
   }
 
