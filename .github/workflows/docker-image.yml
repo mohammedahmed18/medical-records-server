@@ -18,10 +18,10 @@ jobs:
       env:
         DATABASE_URL: ${{ secrets.DATABASE_URL }}
       run: |
-        echo "$ENV_FILE" > .env
+        echo "$DATABASE_URL" > .env
     - name: Check environment variable
       run: |
-        if [[ -z $DATABASE_URL ]]; then
+        if [[ -z ${{ env.DATABASE_URL }} ]]; then
           echo "Error: DATABASE_URL environment variable is empty"
           exit 1
         fi
