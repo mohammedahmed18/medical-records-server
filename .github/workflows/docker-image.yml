@@ -14,5 +14,11 @@ jobs:
 
     steps:
     - uses: actions/checkout@v3
+    - name: Set up environment
+      env:
+        ENV_FILE: ${{ secrets.ENV_FILE }}
+      run: |
+        echo "$ENV_FILE" > .env
+        
     - name: Build the Docker image
       run: docker build . --file Dockerfile --tag medical-records-server
