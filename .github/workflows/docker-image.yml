@@ -16,15 +16,13 @@ jobs:
 
     - name: Set up environment
       run: |
-        echo "${{ secrets.DATABASE_URL }}" > .env
-
+        echo "DATABASE_URL=${{ secrets.DATABASE_URL }}" > .env
+        
     - name: Check environment variable
       run: |
-        echo "DATABASE_URL=${{ secrets.DATABASE_URL }}"
         if [[ -z $(cat .env) ]]; then
           echo "Error: DATABASE_URL environment variable is empty"
           exit 1
         fi
-
-#     - name: Build the Docker image
-#       run: docker build . --file Dockerfile --tag medical-records-server
+    - name: Build the Docker image
+      run: docker build . --file Dockerfile --tag medical-records-server
