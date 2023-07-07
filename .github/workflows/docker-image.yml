@@ -31,5 +31,8 @@ jobs:
     - name: Build the Docker image
       run: docker build . --file Dockerfile --tag medical-records-server
 
+    - name: Tag Docker image
+      run: docker tag medical-records-server mohammed180/medical-records-server:latest
+
     - name: Push the Docker image to Docker Hub
       run: docker push mohammed180/medical-records-server:latest
