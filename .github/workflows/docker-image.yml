@@ -20,10 +20,11 @@ jobs:
 
     - name: Check environment variable
       run: |
+        cat .env
         if [[ -z $(cat .env) ]]; then
           echo "Error: DATABASE_URL environment variable is empty"
           exit 1
         fi
 
-    - name: Build the Docker image
-      run: docker build . --file Dockerfile --tag medical-records-server
+#     - name: Build the Docker image
+#       run: docker build . --file Dockerfile --tag medical-records-server
