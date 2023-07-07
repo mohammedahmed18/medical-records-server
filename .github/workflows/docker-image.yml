@@ -7,25 +7,23 @@ on:
     branches: [ "master" ]
 
 jobs:
-
   build:
-
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v3
+    - name: Checkout repository
+      uses: actions/checkout@v3
+
     - name: Set up environment
-      env:
-        DATABASE_URL: ${{ secrets.DATABASE_URL }}
       run: |
-        echo "$DATABASE_URL" > .env
+        echo "${{ secrets.DATABASE_URL }}" > .env
+
     - name: Check environment variable
       run: |
-        echo {{ env.DATABASE_URL }} | sed 's/./& /g'
-        if [[ -z $DATABASE_URL ]]; then
+        if [[ -z $(cat .env) ]]; then
           echo "Error: DATABASE_URL environment variable is empty"
           exit 1
         fi
-        
+
     - name: Build the Docker image
       run: docker build . --file Dockerfile --tag medical-records-server
