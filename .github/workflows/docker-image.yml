@@ -19,6 +19,8 @@ jobs:
         ENV_FILE: ${{ secrets.ENV_FILE }}
       run: |
         echo "$ENV_FILE" > .env
+    - name: Check environment variable
+      run: echo $DATABASE_URL
         
     - name: Build the Docker image
       run: docker build . --file Dockerfile --tag medical-records-server
