@@ -21,7 +21,8 @@ jobs:
         echo "$DATABASE_URL" > .env
     - name: Check environment variable
       run: |
-        if [[ -z ${{ env.DATABASE_URL }} ]]; then
+        echo {{ env.DATABASE_URL }}
+        if [[ -z $DATABASE_URL ]]; then
           echo "Error: DATABASE_URL environment variable is empty"
           exit 1
         fi
