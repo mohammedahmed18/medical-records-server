@@ -29,11 +29,16 @@ jobs:
       run: docker login --username mohammed180 --password ${{ secrets.DOCKERHUB_PASSWORD }}
 
     - name: test ssh
-      run: |
-        ssh ubuntu@3.20.96.118 <<EOF
-          echo logged it to ec2
-        EOF
-        
+      uses: appleboy/ssh-action@master
+      with:
+          host: ${{ secrets.SSH_HOST }}
+          port: 80
+          username: ubuntu
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          script: |
+            echo "Hello, world!"
+            ls -l
+
     - name: Build the Docker image
       run: docker build . --file Dockerfile --tag medical-records-server
 
