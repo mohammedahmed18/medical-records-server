@@ -32,9 +32,8 @@ jobs:
       uses: appleboy/ssh-action@master
       with:
           host: ${{ secrets.SSH_HOST }}
-          port: 80
           username: ubuntu
-          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          password: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
             echo "Hello, world!"
             ls -l
