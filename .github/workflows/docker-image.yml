@@ -28,15 +28,6 @@ jobs:
     - name: Log in to Docker Hub
       run: docker login --username mohammed180 --password ${{ secrets.DOCKERHUB_PASSWORD }}
 
-    - name: test ssh
-      uses: appleboy/ssh-action@master
-      with:
-          host: ${{ secrets.SSH_HOST }}
-          username: ${{ secrets.SSH_USERNAME }}
-          password: ${{ secrets.SSH_PRIVATE_KEY }}
-          script: |
-            echo "Hello, world!"
-            ls -l
 
     - name: Build the Docker image
       run: docker build . --file Dockerfile --tag medical-records-server
