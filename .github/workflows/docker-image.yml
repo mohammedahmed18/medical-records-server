@@ -17,6 +17,19 @@ jobs:
     - name: Set up environment
       run: |
         echo "DATABASE_URL=${{ secrets.DATABASE_URL }}" >> .env
+        echo "REDIS_URL=${{ secrets.REDIS_URL }}" >> .env
+        echo "JWT_SECRET=${{ secrets.JWT_SECRET }}" >> .env
+        echo "QR_SECRET=${{ secrets.QR_SECRET }}" >> .env
+        echo "ADMIN_JWT_SECRET=${{ secrets.ADMIN_JWT_SECRET }}" >> .env
+        echo "RT_SECRET=${{ secrets.RT_SECRET }}" >> .env
+        echo "COOKIE_SECRET=${{ secrets.COOKIE_SECRET }}" >> .env
+        echo "CLOUDINARY_NAME=${{ secrets.CLOUDINARY_NAME }}" >> .env
+        echo "CLOUDINARY_API_KEY=${{ secrets.CLOUDINARY_API_KEY }}" >> .env
+        echo "CLOUDINARY_API_SECRET=${{ secrets.CLOUDINARY_API_SECRET }}" >> .env
+        echo "OPENAI_API_KEY=${{ secrets.OPENAI_API_KEY }}" >> .env
+
+
+
         
     - name: Check environment variable
       run: |
