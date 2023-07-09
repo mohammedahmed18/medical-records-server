@@ -40,10 +40,13 @@ jobs:
             
     - name: Log in to Docker Hub
       run: docker login --username mohammed180 --password ${{ secrets.DOCKERHUB_PASSWORD }}
-
+      
 
     - name: Build the Docker image
       run: docker build . --file Dockerfile --tag medical-records-server
+      env: 
+        DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+        
 
     - name: Tag Docker image
       run: docker tag medical-records-server mohammed180/medical-records-server:latest
