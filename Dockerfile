@@ -72,6 +72,7 @@ RUN service postgresql start \
     && su - postgres -c "psql -c \"CREATE USER admin PASSWORD '${DB_PASSWORD}';\"" \
     && su - postgres -c "psql -c 'ALTER USER admin CREATEDB;'" \
     && su - postgres -c "psql -c 'ALTER USER admin WITH SUPERUSER;'" \
+    && su - postgres -c "psql -c 'CREATE DATABASE medical_records;'" \
     && service postgresql stop
 
 
