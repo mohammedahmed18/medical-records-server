@@ -71,9 +71,7 @@ RUN echo "host all all 0.0.0.0/0 trust" >> /etc/postgresql/15/main/pg_hba.conf \
 RUN service postgresql start \
     && su - postgres -c "psql -c \"CREATE USER admin PASSWORD '${DB_PASSWORD}';\"" \
     && su - postgres -c "psql -c 'ALTER USER admin CREATEDB;'" \
-    && su - postgres -c "psql -c 'ALTER USER admin WITH SUPERUSER;'" \
-    && service postgresql stop
-
+    && su - postgres -c "psql -c 'ALTER USER admin WITH SUPERUSER;'"
 
 # install redis server
 RUN apt-get update \ 
@@ -89,4 +87,4 @@ RUN echo 'vm.overcommit_memory = 1' >> /etc/sysctl.conf
 
 EXPOSE 3000
 
-CMD service postgresql start && service redis-server start && npm start
+CMD service redis-server start && npm start
