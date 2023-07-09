@@ -42,8 +42,6 @@ RUN rm -rf \
 VOLUME [ "/records-volumes" ]
 
 
-COPY .env.example .env
-
 COPY package*.json ./
 
 
