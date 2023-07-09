@@ -69,7 +69,7 @@ RUN echo "host all all 0.0.0.0/0 trust" >> /etc/postgresql/15/main/pg_hba.conf \
     && echo "listen_addresses='*'" >> /etc/postgresql/15/main/postgresql.conf
 
 RUN service postgresql start \
-    && su - postgres -c "psql -c \"CREATE USER admin PASSWORD 123secret;\"" \
+    && su - postgres -c "psql -c \"CREATE USER admin PASSWORD '${DB_PASSWORD}';\"" \
     && su - postgres -c "psql -c 'ALTER USER admin CREATEDB;'" \
     && su - postgres -c "psql -c 'ALTER USER admin WITH SUPERUSER;'" \
     && service postgresql stop
