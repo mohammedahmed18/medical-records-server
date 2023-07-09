@@ -41,7 +41,7 @@ export class UsersController {
   //   FIXME: note this is only for testing remove it when the project is done
   @Post('make-doctor')
   @UseValidation(makeDoctorSchema)
-  @Public()
+  @Admin()
   async makeDoctor(@Body() body) {
     return await this.usersService.makeDoctor(
       body.nationalId,
