@@ -68,13 +68,6 @@ ENV NODE_ENV=${NODE_ENV}
 RUN echo "host all all 0.0.0.0/0 trust" >> /etc/postgresql/15/main/pg_hba.conf \
     && echo "listen_addresses='*'" >> /etc/postgresql/15/main/postgresql.conf
 
-RUN service postgresql start \
-    && su - postgres -c "psql -c \"CREATE USER admin PASSWORD '${DB_PASSWORD}';\"" \
-    && su - postgres -c "psql -c 'ALTER USER admin CREATEDB;'" \
-    && su - postgres -c "psql -c 'ALTER USER admin WITH SUPERUSER;'" \
-    && su - postgres -c "psql -c 'CREATE DATABASE medical_records;'" \
-    && service postgresql stop
-
 
 # install redis server
 RUN apt-get update \ 
@@ -84,9 +77,14 @@ RUN apt-get update \
 COPY . .
 
 RUN service postgresql start \
+    && su - postgres -c "psql -c \"CREATE USER admin PASSWORD '${DB_PASSWORD}';\"" \
+    && su - postgres -c "psql -c 'ALTER USER admin CREATEDB;'" \
+    && su - postgres -c "psql -c 'ALTER USER admin WITH SUPERUSER;'" \
+    && su - postgres -c "psql -c 'CREATE DATABASE medical_records;'" \
     && npx prisma generate \
     && npx prisma db push \
     && service postgresql stop
+
 
 RUN npm run build
 RUN echo 'vm.overcommit_memory = 1' >> /etc/sysctl.conf
