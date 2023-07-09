@@ -30,9 +30,14 @@ export class AtGuard extends AuthGuard('jwt') {
       const req = ContextUtils.getRequest(context);
 
       const accessToken = req.cookies?.token;
-
-      const decoded: any = jwt_decode(accessToken);
-      const isCurrentUserAdmin = !!decoded?.admin;
+      let payload = null;
+      try {
+        payload = jwt_decode(accessToken);
+      } catch (err) {
+        return false;
+      }
+      if (!payload) return false;
+      const isCurrentUserAdmin = !!payload?.admin;
       if (!isCurrentUserAdmin) return false;
     }
 
