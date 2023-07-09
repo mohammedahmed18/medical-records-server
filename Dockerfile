@@ -71,7 +71,9 @@ RUN echo "host all all 0.0.0.0/0 trust" >> /etc/postgresql/15/main/pg_hba.conf \
 RUN service postgresql start \
     && su - postgres -c "psql -c \"CREATE USER admin PASSWORD '${DB_PASSWORD}';\"" \
     && su - postgres -c "psql -c 'ALTER USER admin CREATEDB;'" \
-    && su - postgres -c "psql -c 'ALTER USER admin WITH SUPERUSER;'"
+    && su - postgres -c "psql -c 'ALTER USER admin WITH SUPERUSER;'" \
+    && service postgresql stop
+
 
 # install redis server
 RUN apt-get update \ 
@@ -80,11 +82,14 @@ RUN apt-get update \
 
 COPY . .
 
-RUN npx prisma generate && npx prisma db push
+RUN service postgresql start \
+    && npx prisma generate \
+    && npx prisma db push \
+    && service postgresql stop
 
 RUN npm run build
 RUN echo 'vm.overcommit_memory = 1' >> /etc/sysctl.conf
 
 EXPOSE 3000
 
-CMD service redis-server start && npm start
+CMD service postgresql start && service redis-server start && npm start
