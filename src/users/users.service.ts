@@ -10,6 +10,7 @@ import {
   ALL_USER_FIRST_LEVEL_FIELDS,
   BASE_IMAGE_SIZE,
   PUBLIC_FIELDS,
+  QR_LIFETIME,
 } from 'src/constants';
 import { MedicalSpecialization, Prisma } from '@prisma/client';
 import { Gender, UserProfile, User } from 'src/graphql';
@@ -228,8 +229,7 @@ export class UsersService {
       },
       {
         secret: this.config.get('QR_SECRET'),
-        // TODO: uncomment this line when done testing
-        // expiresIn: QR_LIFETIME,
+        expiresIn: QR_LIFETIME,
       },
     );
 

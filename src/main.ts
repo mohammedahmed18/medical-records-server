@@ -6,10 +6,17 @@ import { AppModule } from './app.module';
 import { Logger } from '@nestjs/common';
 import * as cookieParser from 'cookie-parser';
 import helmet from 'helmet';
+import * as fs from 'fs';
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
-  const whiteList = [ ...CLIENT_WHITELIST ,SERVER_URL ]
+  const httpsOptions = {
+    key: fs.readFileSync('./crt/private-key.pem'),
+    cert: fs.readFileSync('./crt/public-certificate.pem'),
+  };
+
+  const app = await NestFactory.create(AppModule, { httpsOptions });
+
+  const whiteList = [...CLIENT_WHITELIST, SERVER_URL];
   app.useGlobalFilters(new NotFoundExceptionFilter());
   app.useGlobalInterceptors(new ErrorInterceptor());
   app.use(cookieParser(process.env.COOKIE_SECRET));
@@ -18,17 +25,17 @@ async function bootstrap() {
       frameguard: {
         action: 'deny',
       },
-      // contentSecurityPolicy : isProd ? undefined : false, // will enable the graphql playgrond only during development 
-      contentSecurityPolicy : false, 
+      // contentSecurityPolicy : isProd ? undefined : false, // will enable the graphql playgrond only during development
+      contentSecurityPolicy: false,
     }),
   );
   app.enableCors({
     origin: function (origin, callback) {
       // Logger.debug({origin})
       if (!origin || whiteList.indexOf(origin) !== -1) {
-        callback(null, true)
+        callback(null, true);
       } else {
-        callback(new Error('Not allowed by CORS'))
+        callback(new Error('Not allowed by CORS'));
       }
     },
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
