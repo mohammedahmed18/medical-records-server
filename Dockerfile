@@ -39,7 +39,7 @@ RUN rm -rf \
 
 
 # Define volumes - Service Layer
-VOLUME [ "/stacks" ]
+VOLUME [ "/records-volumes" ]
 
 
 COPY .env.example .env
