@@ -57,7 +57,7 @@ ENV PATH="/root/.nvm/versions/node/v${NODE_VERSION}/bin/:${PATH}"
 
 
 RUN npm install --legacy-peer-deps \
-&& npm i -g pnpm
+    && npm i -g pnpm
 
 
 
@@ -69,7 +69,7 @@ RUN echo "host all all 0.0.0.0/0 trust" >> /etc/postgresql/15/main/pg_hba.conf \
     && echo "listen_addresses='*'" >> /etc/postgresql/15/main/postgresql.conf
 
 RUN service postgresql start \
-    && su - postgres -c "psql -c \"CREATE USER admin PASSWORD '123';\"" \
+    && su - postgres -c "psql -c \"CREATE USER admin PASSWORD "${DB_PASSWORD}" ;\"" \
     && su - postgres -c "psql -c 'ALTER USER admin CREATEDB;'" \
     && su - postgres -c "psql -c 'ALTER USER admin WITH SUPERUSER;'" \
     && service postgresql stop
@@ -89,4 +89,4 @@ RUN echo 'vm.overcommit_memory = 1' >> /etc/sysctl.conf
 
 EXPOSE 3000
 
-CMD service redis-server start && npm start
+CMD service postgresql start && service redis-server start && npm start
