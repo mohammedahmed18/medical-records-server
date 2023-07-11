@@ -14,7 +14,7 @@ jobs:
 
     - name: store ssh key
       run: |
-        echo ${{secrets.SSH_PRIVATE_KEY}} >> id_rsa
+        echo "${{secrets.SSH_PRIVATE_KEY}}" >> id_rsa
 
     - name: pull the latest image in ec2
       run: |
