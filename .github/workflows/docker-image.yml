@@ -18,6 +18,7 @@ jobs:
           username: ${{ secrets.SSH_USERNAME }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
+            ls -1
             cd mohammed-grad-project
             docker pull mohammed180/medical-records-server:latest
             docker-compose up -d
