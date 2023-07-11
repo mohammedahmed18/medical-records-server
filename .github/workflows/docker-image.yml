@@ -14,11 +14,11 @@ jobs:
 
     - name: store ssh key
       run: |
-        echo ${{secrets.SSH_PRIVATE_KEY}} >> ~/.ssh/id_rsa
+        echo ${{secrets.SSH_PRIVATE_KEY}} >> id_rsa
 
     - name: pull the latest image in ec2
       run: |
-        ssh ubuntu@3.138.142.207 <<EOF
+        ssh -i id_rsa ubuntu@3.138.142.207 <<EOF
           echo accessed
         EOF
 
