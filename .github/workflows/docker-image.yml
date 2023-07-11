@@ -53,3 +53,11 @@ jobs:
 
     - name: Push the Docker image to Docker Hub
       run: docker push mohammed180/medical-records-server:latest
+    
+    - name: pull the latest image in ec2
+      uses: appleboy/ssh-action@v0.1.10
+      with:
+        host: ${{ secrets.SSH_HOST }}
+        username: ${{ secrets.SSH_USERNAME}}
+        password: ${{ secrets.SSH_PRIVATE_KEY }}
+        script: whoami
