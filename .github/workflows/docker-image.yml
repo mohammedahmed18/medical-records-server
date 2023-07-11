@@ -1,28 +1,12 @@
 name: Docker Image CI/CD
 
-on:
-  push:
-    branches: [ "master" ]
-  pull_request:
-    branches: [ "master" ]
+on: [workflow_dispatch]
 
 jobs:
   build:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Deploy in EC2
-      uses: appleboy/ssh-action@master
-      with:
-          host: ${{ secrets.SSH_HOST }}
-          username: ${{ secrets.SSH_USERNAME }}
-          key: ${{ secrets.SSH_PRIVATE_KEY }}
-          script: |
-            ls -1
-            cd mohammed-grad-project
-            docker pull mohammed180/medical-records-server:latest
-            docker-compose up -d
-    
     - name: Checkout repository
       uses: actions/checkout@v3
 
@@ -67,4 +51,14 @@ jobs:
       run: docker push mohammed180/medical-records-server:latest
     
 
-    
+    - name: Deploy in EC2
+      uses: appleboy/ssh-action@master
+      with:
+        host: ${{ secrets.SSH_HOST }}
+        username: ${{ secrets.SSH_USERNAME }}
+        key: ${{ secrets.SSH_PRIVATE_KEY }}
+        script: |
+            ls -1
+            cd mohammed-grad-project
+            docker pull mohammed180/medical-records-server:latest
+            docker-compose up -d
