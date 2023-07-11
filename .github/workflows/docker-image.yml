@@ -11,7 +11,21 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+    - name: Deploy in EC2
+      uses: appleboy/ssh-action@master
+      with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USERNAME }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
 
+
+    - name: Run deployment commands on EC2
+      run: |
+        cd mohammed-grad-project
+        docker pull mohammed180/medical-records-server:latest
+        docker-compose up -d
+    
+    
     - name: Checkout repository
       uses: actions/checkout@v3
 
@@ -55,16 +69,5 @@ jobs:
     - name: Push the Docker image to Docker Hub
       run: docker push mohammed180/medical-records-server:latest
     
-    - name: Deploy in EC2
-      env:
-        PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY  }}
-        HOSTNAME : ${{ secrets.SSH_HOST  }}
-        USER_NAME : ${{ secrets.SSH_USERNAME  }}
-        
-      run: |
-        echo "$PRIVATE_KEY" > private_key && chmod 600 private_key
-        ssh -o StrictHostKeyChecking=no -i private_key ${USER_NAME}@${HOSTNAME}
-        
-        #Now we have got the access of EC2 and we will start the deploy .
-        cd mohammed-grad-project && docker pull mohammed180/medical-records-server:latest && docker-compose up -d
+
     
