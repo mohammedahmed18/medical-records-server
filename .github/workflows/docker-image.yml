@@ -23,7 +23,8 @@ jobs:
         echo "$PRIVATE_KEY" > private_key && chmod 600 private_key
         ssh -i private_key ${USER_NAME}@${HOSTNAME} <<EOF
           ls -1
-        EOF 
+        EOF
+      
 
     - name: Checkout repository
       uses: actions/checkout@v3
