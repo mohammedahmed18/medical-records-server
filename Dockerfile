@@ -74,14 +74,14 @@ RUN apt-get update \
 
 COPY . .
 
-RUN service postgresql start \
-    && su - postgres -c "psql -c \"CREATE USER admin PASSWORD '123';\"" \
-    && su - postgres -c "psql -c 'ALTER USER admin CREATEDB;'" \
-    && su - postgres -c "psql -c 'ALTER USER admin WITH SUPERUSER;'" \
-    && su - postgres -c "psql -c 'CREATE DATABASE medical_records;'" \
-    && npx prisma generate \
-    && npx prisma db push \
-    && service postgresql stop
+# RUN service postgresql start \
+#     && su - postgres -c "psql -c \"CREATE USER admin PASSWORD '123';\"" \
+#     && su - postgres -c "psql -c 'ALTER USER admin CREATEDB;'" \
+#     && su - postgres -c "psql -c 'ALTER USER admin WITH SUPERUSER;'" \
+#     && su - postgres -c "psql -c 'CREATE DATABASE medical_records;'" \
+#     && npx prisma generate \
+#     && npx prisma db push \
+#     && service postgresql stop
 
 
 RUN npm run build
@@ -89,4 +89,4 @@ RUN echo 'vm.overcommit_memory = 1' >> /etc/sysctl.conf
 
 EXPOSE 3000
 
-CMD service postgresql start && service redis-server start && npm start
+CMD service redis-server start && npm start
