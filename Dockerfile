@@ -18,10 +18,10 @@ ARG DEBIAN_FRONTEND=noninteractive
 RUN apt-get install -y gnupg2 lsb-release \
     && sh -c 'echo "deb http://apt.postgresql.org/pub/repos/apt $(lsb_release -cs)-pgdg main" > /etc/apt/sources.list.d/pgdg.list' \ 
     && wget --no-check-certificate --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | apt-key add - \
-    && curl -sL https://deb.nodesource.com/setup_14.x | bash - \
-    && apt-get install -y nodejs \
+    && curl -sL https://deb.nodesource.com/setup_19.x | bash - \
     && apt update \
     && apt-get install -y --no-install-recommends postgresql-15 \
+    && apt-get install -y nodejs \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
@@ -39,8 +39,10 @@ RUN rm -rf \
 
 
 # Define volumes - Service Layer
-VOLUME [ "/records-volumes" ]
+VOLUME [ "/stacks" ]
 
+
+COPY .env.example .env
 
 COPY package*.json ./
 
@@ -54,10 +56,9 @@ RUN . "$NVM_DIR/nvm.sh" && nvm alias default v${NODE_VERSION}
 ENV PATH="/root/.nvm/versions/node/v${NODE_VERSION}/bin/:${PATH}"
 
 
-RUN npm install --legacy-peer-deps \
-    && npm i -g pnpm
+RUN npm install --legacy-peer-deps
 
-
+COPY . .
 
 ARG NODE_ENV=production
 ENV NODE_ENV=${NODE_ENV}
@@ -66,27 +67,25 @@ ENV NODE_ENV=${NODE_ENV}
 RUN echo "host all all 0.0.0.0/0 trust" >> /etc/postgresql/15/main/pg_hba.conf \
     && echo "listen_addresses='*'" >> /etc/postgresql/15/main/postgresql.conf
 
+RUN service postgresql start \
+    && su - postgres -c "psql -c \"CREATE USER admin PASSWORD '123';\"" \
+    && su - postgres -c "psql -c 'ALTER USER admin CREATEDB;'" \
+    && su - postgres -c "psql -c 'ALTER USER admin WITH SUPERUSER;'" \
+    && service postgresql stop
+
 
 # install redis server
 RUN apt-get update \ 
     && apt-get install -y redis-server && apt-get clean && rm -rf /var/lib/apt/lists/*
 
 
-COPY . .
 
-# RUN service postgresql start \
-#     && su - postgres -c "psql -c \"CREATE USER admin PASSWORD '123';\"" \
-#     && su - postgres -c "psql -c 'ALTER USER admin CREATEDB;'" \
-#     && su - postgres -c "psql -c 'ALTER USER admin WITH SUPERUSER;'" \
-#     && su - postgres -c "psql -c 'CREATE DATABASE medical_records;'" \
-#     && npx prisma generate \
-#     && npx prisma db push \
-#     && service postgresql stop
-
+RUN npx prisma generate
 
 RUN npm run build
+
 RUN echo 'vm.overcommit_memory = 1' >> /etc/sysctl.conf
 
 EXPOSE 3000
 
-CMD service redis-server start && npm start
+CMD service postgresql start && service redis-server start && npx prisma db push && npm start
