@@ -9,12 +9,7 @@ import helmet from 'helmet';
 import * as fs from 'fs';
 
 async function bootstrap() {
-  const httpsOptions = {
-    key: fs.readFileSync('./crt/private-key.pem'),
-    cert: fs.readFileSync('./crt/public-certificate.pem'),
-  };
-
-  const app = await NestFactory.create(AppModule, { httpsOptions });
+  const app = await NestFactory.create(AppModule);
 
   const whiteList = [...CLIENT_WHITELIST, SERVER_URL];
   app.useGlobalFilters(new NotFoundExceptionFilter());
