@@ -23,7 +23,7 @@
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
     "test:e2e": "jest --config ./test/jest-e2e.json",
-    "docs": "npm run generate_docs && git --git-dir=.git2/ add --all -f ./medical_records_api_docs && git --git-dir=.git2/ commit -m \"api docs\" && git --git-dir=.git2/ push origin main -f && echo the docs is live on : https://medical-server-api-docs.vercel.app/",
+    "docs": "./docs.sh",
     "generate_docs": "npx insomnia-documenter --config api-docs.json --output ./medical_records_api_docs",
     "prepare": "husky install",
     "lint-staged": "lint-staged",
